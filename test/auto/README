@@ -1,0 +1,23 @@
+Cpu auto tests utilities.
+
+1) Generate instruction test cases dumps:
+
+ $ python mk_tests.py ../../examples/toy001??  >i64.dump
+
+
+2) Process the dump and generate the unittest python file:
+
+ $ python process_tests.py i64.dump >../test_amd64.py
+
+3) Optionally generate the simboic version of the test
+
+ $ python process_tests_symbolic.py i64.dump >../test_symamd64.py
+
+4) Run the tests with 
+
+ > cd ../..; python -m unittest discover
+
+
+
+
+
