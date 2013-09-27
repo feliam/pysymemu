@@ -1252,13 +1252,5 @@ class SLinux(Linux):
         return fd
 
     def sys_exit_group(self, cpu, error_code):
-        for f in self.files:
-            if isinstance(f, SymbolicFile):
-                buf = ''
-                for i in range(0,f.max_size):
-                    val = self.solver.getvalue(f.array[i])
-                    buf += chr(val)
-                print "%s: "%f.name,buf.encode('hex')
-                file('pepito','a').write("%s: %s\n"%(f.name, repr(buf)))
         return super(SLinux, self).sys_exit_group(cpu, error_code)
 
