@@ -610,7 +610,7 @@ class Cpu(object):
         for reg_name in ['RAX', 'RCX', 'RDX', 'RBX', 'RSP', 'RBP', 'RSI', 'RDI', 'R8', 'R9', 'R10', 'R11', 'R12', 'R13', 'R14', 'R15',  'RIP',]:
             value = getattr(self, reg_name)
             if issymbolic(value):
-                result += CFAIL+"%s:0%16s"%(reg_name, value)+CEND
+                result += "%s: "%reg_name + CFAIL+"%16s"%value+CEND+'\n'
             else:
                 result += "%s: 0x%016x"%(reg_name, value)
 
@@ -625,7 +625,7 @@ class Cpu(object):
         for reg_name in ['CF','SF','ZF','OF','AF', 'PF', 'IF']:
             value = getattr(self, reg_name)
             if issymbolic(value):
-                result += "%s: %16s\n"%(reg_name, value)
+                result += "%s:"%reg_name + CFAIL+ "%16s\n"%value+CEND
             else:
                 result += "%s: %1x"%(reg_name, value)
 
@@ -977,7 +977,6 @@ class Cpu(object):
             for l in cpu.dumpregs().split('\n'):
                 logger.debug(l)
         logger.debug("INSTRUCTION: %016x %s",cpu.PC, instruction)
-        #run it
         implementation = getattr(cpu, instruction.mnemonic)
         implementation(*instruction.operands)
         #housekeeping
