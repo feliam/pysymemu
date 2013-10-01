@@ -32,7 +32,7 @@ from functools import wraps, partial
 import collections
 #For the disassembler TODO: Use this http://ref.x86asm.net/x86reference.xml and pure python
 from distorm3 import Decompose, Decode16Bits, Decode32Bits, Decode64Bits, Mnemonics, Registers
-from smtlibv2 import ITEBV as ITE, Bool, BitVec, Array, issymbolic, ZEXTEND, SEXTEND, ord, chr, OR, AND, CONCAT, UDIV, UREM, ULT, UGT, ULE, EXTRACT
+from smtlibv2 import ITEBV as ITE, Bool, BitVec, Array, issymbolic, ZEXTEND, SEXTEND, ord, chr, OR, AND, CONCAT, UDIV, UREM, ULT, UGT, ULE, EXTRACT, isconcrete
 
 import logging
 logger = logging.getLogger("CPU")
@@ -971,7 +971,7 @@ class Cpu(object):
         #Check if we already have an implementation...
         if not hasattr(cpu, instruction.mnemonic):
             raise InstructionNotImplemented( "Instruction %s at %x Not Implemented (text: %s)" % 
-                    (instruction.mnemonic, cpu.PC, intruction.text.encode('hex')) )
+                    (instruction.mnemonic, cpu.PC, instruction.text.encode('hex')) )
         #log
         if logger.level == logging.DEBUG :
             for l in cpu.dumpregs().split('\n'):
@@ -5130,7 +5130,7 @@ def getcache(cache_name):
             #self, where, expr, size
             cache = getattr(obj, cache_name)
             used = getattr(obj, cache_name+"_used")
-            if ISCONCRETE(where):
+            if isconcrete(where):
                 if where in used:
                     cached_expr, cached_size = cache[used[where]]
                     offset = (where - used[where])*8
@@ -5139,7 +5139,7 @@ def getcache(cache_name):
                     elif cached_size-offset >= size:
                         return EXTRACT(cached_expr,offset,size) #(cached_expr>>offset)&((1<<size)-1)
             value = get(obj, where, size,**kw_args)
-            if ISCONCRETE(where):
+            if isconcrete(where):
                 #invalidate any overlaping cached value #todo extract remaining valid bits
                 p = where
                 while p <= where+size/8:
