@@ -42,9 +42,11 @@ from linux import SLinux
 from smtlibv2 import issymbolic, Symbol, Solver, BitVec, Array, Bool, chr
 
 # logging
-logging.basicConfig(filename = "system.log",
+logging.basicConfig( filename = "system.log",
+#                     filename = "/dev/stdout",
                     format = "%(asctime)s: %(name)s:%(levelname)s: %(message)s",
-                    level = logging.INFO)
+#                    level = logging.INFO)
+                    level = logging.DEBUG)
 logger = logging.getLogger("SYSTEM")
 
 # parse arguments
@@ -76,10 +78,10 @@ if '--' in raw_args:
     prg_args = raw_args[raw_args.index('--')+1:]
     raw_args = raw_args[:raw_args.index('--')]
 
-print raw_args, prg_args
+
 args = parser.parse_args(raw_args)
 args.argv += prg_args
-print "Running", args.program
+print "[+] Running", args.program
 print "\twith arguments:", args.argv
 print "\twith environment:", args.env
 
@@ -87,7 +89,7 @@ print "\twith environment:", args.env
 from elftools.elf.elffile import ELFFile
 arch = {'x86':'i386','x64':'amd64'}[ELFFile(file(args.program)).get_machine_arch()]
 bits = {'i386':32, 'amd64':64}[arch]
-print "Detected arch:", arch
+print "[+] Detected arch:", arch
 
 #Make working directory
 folder = tempfile.mkdtemp(prefix=args.worspace, dir='./')
@@ -282,7 +284,6 @@ try:
                     '''
                     new_pc=None
                     vals = None
-
                 count += 1
         except Exception,e:
             test_case_no+=1

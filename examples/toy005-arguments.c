@@ -16,9 +16,9 @@ int main(int argc, char* argv[], char* envp[]){
     
     printf("Got %d arguments.\n", argc);
     if(argc > 1)
-        if (strcmp(argv[1] == '--dostuff')
+        if (!strcmp(argv[1], "--dostuff"))
             printf ("Do stuf!\n");
-        }
+        
     
 return 0;
 }

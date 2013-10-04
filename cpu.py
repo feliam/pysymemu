@@ -3984,7 +3984,6 @@ class Cpu(object):
         res = value
         cpu.PF = (res ^ res>>1 ^ res>>2 ^ res>>3 ^ res>>4 ^ res>>5 ^ res>>6 ^ res>>7)&1 == 0
 
-
     @instruction
     def BSR(cpu, dest, src):
         ''' 
@@ -4023,6 +4022,7 @@ class Cpu(object):
         for pos in reversed(xrange(0, src.size)):
             res = ITE(dest.size, flag, res, pos)
             flag = flag |  (EXTRACT(value, pos, 1) == 1)
+
         cpu.PF = (res ^ res>>1 ^ res>>2 ^ res>>3 ^ res>>4 ^ res>>5 ^ res>>6 ^ res>>7)&1 == 0
         cpu.ZF = value == 0
         dest.write(ITE(dest.size, cpu.ZF, dest.read(), res))
@@ -4803,10 +4803,10 @@ class Cpu(object):
         result = []
         value_a = dest.read()
         value_b = src.read()
-        for i in range(0,dest.size):
+        for i in reversed(range(0,dest.size,8)):
             a = EXTRACT(value_a, i, 8)
             b = EXTRACT(value_b, i, 8)
-            result.append(a-b)
+            result.append((a-b)&0xff)
         dest.write(CONCAT(8, *result))
 
 

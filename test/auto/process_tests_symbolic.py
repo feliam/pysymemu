@@ -94,7 +94,7 @@ for test_name in sorted(test_dic.keys()):
 
         solver = Solver()
 
-        mem = CPUTest.SMem(solver.mkArray({'i386': 32, 'amd64': 64}[test['arch']]), test['pre']['memory'])
+        mem = SymCPUTest.SMem(solver.mkArray({'i386': 32, 'amd64': 64}[test['arch']]), test['pre']['memory'])
         cpu = Cpu(mem, test['arch'])
         for reg_name in test['pre']['registers']:
             if reg_name in ['RIP','EIP','IP']:

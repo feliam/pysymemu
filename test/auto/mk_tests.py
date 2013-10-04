@@ -115,9 +115,9 @@ for i in range(75,120):
             gdb.setByte('$sp+sizeof(void*)*%d'%(i-1),1)
 
 STACK_INSTRUCTIONS = ['BOUND', 'CALL', 'CALLF', 'ENTER', 'INT', 'INT1', 'INTO', 'IRET', 'IRETD', 'LEAVE', 'POP', 'POPA', 'POPAD', 'POPF', 'POPFD', 'PUSH', 'PUSHA', 'PUSHAD', 'PUSHF', 'PUSHFD', 'RETF', 'RETN', 'RET']
-
 while True:
     try:
+        stepped = False
         pc = gdb.getR({'i386': 'EIP', 'amd64': 'RIP'}[arch]) 
         text = ''.join([chr(gdb.getByte(pc+i)) for i in range(16)])
         #print text.encode('hex')
@@ -191,6 +191,7 @@ while True:
 
         # STEP !
         gdb.stepi()
+        stepped = True
 
         # gather POS info
         registers = {}
@@ -245,6 +246,8 @@ while True:
         if "The program has no registers now." in gdb.correspond("info registers\n"):
             break
         print "#", e, instruction
+        if not stepped:
+            gdb.stepi()
 
 print "# Processed %d instructions." % count
 
