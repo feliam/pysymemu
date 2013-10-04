@@ -12,13 +12,21 @@ Dependencies:
 Directory structure
 -------------------
 > doc/                    Slides and papers
+
 > examples/               Asorted set of small C examples to emulate
+
 > tutorial/               Very simple test cases
+
 > test/                   Unittests
+
 > setup.py                Setuputils/pipy related (not used yet)
+
 > linux.py                The Linux operating system micro model
+
 > memory.py               The symbolic memory model
+
 > smtlibv2.py             Smtlib v2 solver API 
+
 > system.py               A quick command line tool
 
 Tests
