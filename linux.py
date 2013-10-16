@@ -330,7 +330,7 @@ class Linux(object):
             stack_base = 0xbffdf000
         else:
             stack_base = 0x7ffffffde000
-        stack = self.mem.mmap(stack_base,0x210000,'rwx')+0x210000-1
+        stack = self.mem.mmap(stack_base,0x21000,'rwx')+0x21000-1
         logger.info("Setting argv, envp and auxv.")
         #http://www.phrack.org/issues.html?issue=58&id=5#article
         # position            content                     size (bytes) + comment

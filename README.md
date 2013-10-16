@@ -1,7 +1,9 @@
-pysymemu
+PySymEmu
 ========
 
-An intel 64 symbolic emulator
+An intel 64 symbolic emulator. 
+
+Ekoparty slides: https://github.com/feliam/pysymemu/blob/master/doc/pysymemu.pdf?raw=true
 
 Dependencies:
 -------------
