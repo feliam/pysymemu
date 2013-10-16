@@ -971,7 +971,7 @@ class Cpu(object):
         #Check if we already have an implementation...
         if not hasattr(cpu, instruction.mnemonic):
             raise InstructionNotImplemented( "Instruction %s at %x Not Implemented (text: %s)" % 
-                    (instruction.mnemonic, cpu.PC, instruction.text.encode('hex')) )
+                    (instruction.mnemonic, cpu.PC, instruction.instructionBytes.encode('hex')) )
         #log
         if logger.level == logging.DEBUG :
             for l in cpu.dumpregs().split('\n'):
@@ -4392,6 +4392,33 @@ class Cpu(object):
             res = res << 8
             res |= byte0
         op0.write(res)
+
+    @instruction
+    def PUNPCKLQDQ(cpu, dest, src):
+        '''
+        Interleaves the low-order quad-words of the source and destination operands.
+        
+        Unpacks and interleaves the low-order data elements (bytes, words, doublewords, and quadwords)
+        of the destination operand (first operand) and source operand (second operand) into the 
+        destination operand.
+
+        @param cpu: current CPU.
+        @param op0: destination operand.
+        @param op1: source operand.
+        '''
+        size = dest.size
+        arg0 = dest.read()
+        arg1 = src.read()
+
+        res = 0
+        for pos in reversed(xrange(0, size/2, 8)):
+            elem0 = ZEXTEND( ( arg0 >> pos )& ((1 << size/2)-1), size)
+            elem1 = ZEXTEND( ( arg1 >> pos )& ((1 << size/2)-1), size)
+            res = res << (size/2)
+            res |= elem1
+            res = res << (size/2)
+            res |= elem0
+        dest.write(res)
 
     @instruction
     def PSHUFD(cpu, op0, op1, op3):
