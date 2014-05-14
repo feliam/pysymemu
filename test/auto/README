@@ -9,7 +9,7 @@ Cpu auto tests utilities.
 
  $ python process_tests.py i64.dump >../test_amd64.py
 
-3) Optionally generate the simboic version of the test
+3) Optionally generate the symbolic version of the test
 
  $ python process_tests_symbolic.py i64.dump >../test_symamd64.py
 
