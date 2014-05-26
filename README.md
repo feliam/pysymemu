@@ -156,4 +156,4 @@ dump_000000000040059d_8452.pkl  dump_00000000004005ab_8452.pkl  dump_init.pkl  t
 ```
 
 1. With a few mods it may accept any smtlibv2 solver that can handle (get-value) command.
-2. In such case you should go tu cpu.py or linux.py and add the necesarry code!
+2. In such case you should go to cpu.py or linux.py and add the necesarry code!
