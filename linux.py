@@ -985,7 +985,69 @@ class Linux(object):
     def sys_ioctl(self, cpu, fd, request, argp):
         return self.files[fd].ioctl(request, argp)
 
+    #from http://www.scs.stanford.edu/histar/src/pkg/uclibc/libc/inet/socketcalls.c
+    def sys_socketcall(self, cpu, call, args):
+        '''
+        socketcall() is a common kernel entry point for the socket system calls.
+        @rtype: int
+        
+        @param cpu: current CPU.
+        @param call: determines which socket function to invoke
+        @param args: points to a block containing the actual arguments, which are
+        passed through to the appropriate call.
+        '''
+        print "SOCKETCALL %d"%call
+        socketcalls = { 1: self.sys_socket,
+                        2: self.sys_bind,
+                        3: self.sys_connect,
+                        4: self.sys_listen,
+                        5: self.sys_accept,
+                        6: self.sys_getsockname,
+                        7: self.sys_getpeername,
+                        8: self.sys_socketpair,
+                        9: self.sys_send,
+                        10: self.sys_recv,
+                        11: self.sys_sendto,
+                        12: self.sys_recvfrom,
+                        13: self.sys_shutdown,
+                        14: self.sys_getsockopt,
+                        15: self.sys_setsockopt,
+                        16: self.sys_sendmsg,
+                        17: self.sys_recvmsg,
+                       }
+        args = [ cpu, cpu.load(args,32), cpu.load(args+4,32), cpu.load(args+8,32), cpu.load(args+12,32), cpu.load(args+16,32), cpu.load(args+20,32), cpu.load(args+24,32) ]
+        func = socketcalls[call]
+        return func(*args[:func.func_code.co_argcount-1])
 
+    def sys_socket(self, cpu, family, ty, protocol):
+        logger.debug("SOCKET not implemented! family: %d, type: %d, protocol: %d", family, ty, protocol)
+        return 0
+
+    def sys_fcntl64(self, cpu, fd, cmd):
+        logger.debug("FCNTL64 not implemented! fd: %d  cmd: %d", fd, cmd)
+        return 0
+
+    def sys_time(self, cpu, tloc):
+        import time
+        t = time.time()
+        if tloc != 0 :
+            cpu.store(tloc, int(t), cpu.AddressSize)
+        return int(t)
+
+    def sys_getpid(self, cpu, v):
+        logger.debug("GETPID, warning pid modeled as concrete 1000")
+        return 1000
+
+    #Signals..
+    def sys_kill(self, cpu, pid, sig):
+        logger.debug("KILL, Ignoring Sending signal %d to pid %d", sig, pid )
+        return 0
+
+    def sys_sigaction(self, cpu, signum, act, oldact):
+        logger.debug("SIGACTION, Ignoring chaging signal handler for signal %d", signum)
+        return 0
+
+    #Distpatchers...
     def syscall(self, cpu):
         ''' 
         64 bit dispatcher.
@@ -1009,26 +1071,14 @@ class Linux(object):
                  0x0000000000000059: self.sys_acct,
                 }
         if cpu.RAX not in syscalls.keys():
-            raise SyscallNotImplemented("64 bit system call %s Not Implemented" % cpu.RAX)
+            raise SyscallNotImplemented("64 bit system call number %s Not Implemented" % cpu.RAX)
+
         func = syscalls[cpu.RAX]
-        logger.debug("SYSCALL64: %s", func.func_name)
+        logger.debug("SYSCALL64: %s (nargs: %d)", func.func_name, func.func_code.co_argcount)
 
         nargs = func.func_code.co_argcount
-        if nargs == 3:
-            cpu.RAX = func(cpu, cpu.RDI)
-        elif nargs == 4:
-            cpu.RAX = func(cpu, cpu.RDI, cpu.RSI)
-        elif nargs == 5:
-            cpu.RAX = func(cpu, cpu.RDI, cpu.RSI, cpu.RDX)
-        elif nargs == 6:
-            cpu.RAX = func(cpu, cpu.RDI, cpu.RSI, cpu.RDX, cpu.R10)
-        elif nargs == 7:
-            cpu.RAX = func(cpu, cpu.RDI, cpu.RSI, cpu.RDX, cpu.R10, cpu.R8)
-        elif nargs == 8:
-            cpu.RAX = func(cpu, cpu.RDI, cpu.RSI, cpu.RDX, cpu.R10, cpu.R8, cpu.R9)
-        else:
-            print nargs
-            raise NotImplemented()
+        args = [ cpu, cpu.RDI, cpu.RSI, cpu.RDX, cpu.R10, cpu.R8, cpu.R9 ]
+        cpu.RAX = func(*args[:nargs-1])
 
     def int80(self, cpu):
         ''' 
@@ -1041,6 +1091,7 @@ class Linux(object):
                      0x00000005: self.sys_open,
                      0x00000006: self.sys_close,
                      0x00000021: self.sys_access, 
+                     0x00000025: self.sys_kill,
                      0x0000002d: self.sys_brk,
                      0x00000036: self.sys_ioctl,
                      0x00000059: self.sys_acct,
@@ -1058,27 +1109,19 @@ class Linux(object):
                      0x000000ca: self.sys_getegid,
                      0x000000f3: self.sys_set_thread_area32,
                      0x000000fc: self.sys_exit_group, 
+                     0x000000ae: self.sys_sigaction, 
+                     0x00000066: self.sys_socketcall, 
+                     0x000000dd: self.sys_fcntl64, 
+                     0x0000000d: self.sys_time, 
+                     0x00000014: self.sys_getpid,
                     }
         if cpu.EAX not in syscalls.keys():
-            raise SyscallNotImplemented("32 bit system call %s Not Implemented" % cpu.RAX)
+            raise SyscallNotImplemented("32 bit system call number %s Not Implemented" % cpu.EAX)
         func = syscalls[cpu.EAX]
-        logger.debug("SYSCALL32: %s", func.func_name)
-
+        logger.debug("SYSCALL32: %s (nargs: %d)", func.func_name, func.func_code.co_argcount)
         nargs = func.func_code.co_argcount
-        if nargs == 3:
-            cpu.EAX = func(cpu, cpu.EBX)
-        elif nargs == 4:
-            cpu.EAX = func(cpu, cpu.EBX, cpu.ECX)
-        elif nargs == 5:
-            cpu.EAX = func(cpu, cpu.EBX, cpu.ECX, cpu.EDX)
-        elif nargs == 6:
-            cpu.EAX = func(cpu, cpu.EBX, cpu.ECX, cpu.EDX, cpu.ESI)
-        elif nargs == 7:
-            cpu.EAX = func(cpu, cpu.EBX, cpu.ECX, cpu.EDX, cpu.ESI, cpu.EDI)
-        elif nargs == 8:
-            cpu.EAX = func(cpu, cpu.EBX, cpu.ECX, cpu.EDX, cpu.ESI, cpu.EDI, cpu.EBP)
-        else:
-            raise NotImplemented()
+        args = [ cpu, cpu.EBX, cpu.ECX, cpu.EDX, cpu.ESI, cpu.EDI, cpu.EBP ]
+        cpu.EAX = func(*args[:nargs-1])
 
     def execute(self):
         """

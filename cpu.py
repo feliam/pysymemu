@@ -638,7 +638,7 @@ class Cpu(object):
 
         return result
 
-    #Memory access
+    #Basic Memory Access
     def write(self, where, data):
         '''
         Writes C{data} in the address C{where}.
@@ -649,6 +649,18 @@ class Cpu(object):
         for c in data:
             self.store(where,ord(c),8) #TODO: fix chr/ord redundancy + putcache use
             where += 1
+
+    def read(self, where, size):
+        '''
+        Writes C{data} in the address C{where}.
+        
+        @param where: address to read the data C{data} from.
+        @param size: number of bytes.
+        '''
+        result = ''
+        for i in range(size):
+            result += self.load(where+i,8)
+        return result
 
     #@putcache("mem_cache")
     def store(self, where, expr, size):
@@ -2322,9 +2334,9 @@ class Cpu(object):
 #  Unsigned Conditional Moves: CMOVGE CMOVNL CMOVL CMOVNGE CMOVLE CMOVNG CMOVO CMOVNO 
 #                              CMOVS CMOVNS 
 ########################################################################################
-    #CMOVGE
+    #CMOVNL
     @instruction
-    def CMOVNL(cpu, dest, src):
+    def CMOVGE(cpu, dest, src):
         ''' 
         Conditional move - Greater or equal/not less.
         
@@ -4815,7 +4827,7 @@ class Cpu(object):
         Packed subtract.
         
         Performs a SIMD subtract of the packed integers of the source operand (second operand) from the packed 
-        integers of the destination operand (first operand), and stores the packed integer results in the 
+        integers of the destpination operand (first operand), and stores the packed integer results in the 
         destination operand. The source operand can be an MMX(TM) technology register or a 64-bit memory location, 
         or it can be an XMM register or a 128-bit memory location. The destination operand can be an MMX or an XMM 
         register.
@@ -4836,6 +4848,21 @@ class Cpu(object):
             result.append((a-b)&0xff)
         dest.write(CONCAT(8, *result))
 
+    @instruction
+    def PTEST(cpu, dest, src):
+        ''' PTEST
+         PTEST set the ZF flag if all bits in the result are 0 of the bitwise AND
+         of the first source operand (first operand) and the second source operand 
+         (second operand). Also this sets the CF flag if all bits in the result 
+         are 0 of the bitwise AND of the second source operand (second operand) 
+         and the logical NOT of the destination operand.
+        '''
+        cpu.OF = False
+        cpu.AF = False
+        cpu.PF = False
+        cpu.SF = False
+        cpu.ZF = dest.read() & src.read() == 0
+        cpu.CF = dest.read() & ~src.read() == 0
 
     @instruction
     def MOVAPS(cpu, dest, src):
@@ -4897,7 +4924,17 @@ class Cpu(object):
         elif dest.size > src.size:
             dest.write(ZEXTEND(src.read(), dest.size))
         elif dest.size < src.size:
-            raise NotImplemented
+            dest.write(EXTRACT(src.read(),0, dest.size))
+    @instruction
+    def VMOVDQU(cpu, dest, src):
+        ''' 
+Moves 128 bits of packed integer values from the source operand (second operand) to the destination operand
+(first operand). This instruction can be used to load an XMM register from a 128-bit memory location, to store the
+contents of an XMM register into a 128-bit memory location, or to move data between two XMM registers.
+When the source or destination operand is a memory operand, the operand must be aligned on a 16-byte boundary
+or a general-protection exception (#GP) will be generated. To move integer data to and from unaligned memory
+locations, use the VMOVDQU instruction.'''
+        raise Exception()
 
     @instruction
     def PREFETCHT0(cpu, arg):
