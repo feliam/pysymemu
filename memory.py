@@ -1041,7 +1041,7 @@ class SMemory(Memory):
         @param addr: the address to put a concrete or symbolic content
         @param data: the content to put in C{addr}
         
-        @todo:  if addr is Readable/Executable? Double checked when accesing parebnt class!!!
+        @todo:  if addr is Readable/Executable? Double checked when accesing parent class!!!
         """
         if issymbolic(addr):
             logger.debug("Write to symbolic address %s", addr)
@@ -1055,13 +1055,13 @@ class SMemory(Memory):
                 if not i in self.addr2symbol:
                     self.symbol[i] = self.getchar(i)
                     self.addr2symbol.add(i)
-            self.symbol[addr] = data
+            self.symbol[addr] = chr(data)
         else:
             #concrete addr case
             if not self.isWriteable(addr):
                 raise MemoryException("No Access Writting", addr)
             if issymbolic(data):
-                self.symbol[addr] = data
+                self.symbol[addr] = chr(data)
                 self.addr2symbol.add(addr)
             else:
                 #both concrete
