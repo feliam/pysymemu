@@ -4,6 +4,7 @@ PySymEmu
 An intel 64 symbolic emulator. 
 
 Ekoparty slides: https://github.com/feliam/pysymemu/blob/master/doc/pysymemu.pdf?raw=true
+API documentation: http://feliam.github.io/pysymemu/
 
 Dependencies:
 -------------
