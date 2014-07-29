@@ -1051,7 +1051,9 @@ class Cpu(object):
                 cpu.EBX = 0
                 cpu.ECX = 0
                 cpu.EDX = 0
-
+        #FIXME:incomplete support for CPUID when EAX == 7
+        elif arg0 == 7:
+            cpu.EBX = 0xffffffff
         elif arg0 == 0xb:
             if cpu. ECX == 0:
                 cpu.EAX = 0x1
@@ -4406,6 +4408,33 @@ class Cpu(object):
         op0.write(res)
 
     @instruction
+    def PUNPCKLWD(cpu, dest, src):
+        '''
+        Interleaves the low-order bytes of the source and destination operands.
+        
+        Unpacks and interleaves the low-order data elements (bytes, words, doublewords, and quadwords)
+        of the destination operand (first operand) and source operand (second operand) into the 
+        destination operand.
+
+        @param cpu: current CPU.
+        @param op0: destination operand.
+        @param op1: source operand.
+        '''
+        size = dest.size
+        arg0 = dest.read()
+        arg1 = src.read()
+
+        res = 0
+        for pos in reversed(xrange(0, size/2, 8)):
+            elem0 = ZEXTEND( ( arg0 >> pos )& ((1 << size/2)-1), size)
+            elem1 = ZEXTEND( ( arg1 >> pos )& ((1 << size/2)-1), size)
+            res = res << (size/2)
+            res |= elem1
+            res = res << (size/2)
+            res |= elem0
+        dest.write(res)
+
+    @instruction
     def PUNPCKLQDQ(cpu, dest, src):
         '''
         Interleaves the low-order quad-words of the source and destination operands.
@@ -4651,6 +4680,14 @@ class Cpu(object):
         cpu.DF = True
 
     @instruction
+    def CQO(cpu):
+        ''' 
+        RDX:RAX = sign-extend of RAX.
+        '''
+        res = SEXTEND(cpu.RAX,64,128)
+        cpu.RBX = (res >> 64) & 0xffffffffffffffff
+
+    @instruction
     def CDQE(cpu):
         ''' 
         RAX = sign-extend of EAX.
@@ -4848,6 +4885,17 @@ class Cpu(object):
             result.append((a-b)&0xff)
         dest.write(CONCAT(8, *result))
 
+    @instruction
+    def POR(cpu, dest, src):
+        '''
+        Performs a bitwise logical OR operation on the source operand (second operand) and the destination operand 
+        (first operand) and stores the result in the destination operand. The source operand can be an MMX technology 
+        register or a 64-bit memory location or it can be an XMM register or a 128-bit memory location. The destination 
+        operand can be an MMX technology register or an XMM register. Each bit of the result is set to 1 if either 
+        or both of the corresponding bits of the first and second operands are 1; otherwise, it is set to 0.
+        '''
+        res = dest.write(dest.read()|src.read())
+        
     @instruction
     def PTEST(cpu, dest, src):
         ''' PTEST
