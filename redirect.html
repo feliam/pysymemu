@@ -1,0 +1,38 @@
+<html><head><title>Epydoc Redirect Page</title>
+<meta http-equiv="cache-control" content="no-cache" />
+<meta http-equiv="expires" content="0" />
+<meta http-equiv="pragma" content="no-cache" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+<!--
+var pages = ["cpu.InstructionNotImplemented-c", "linux.SyscallNotImplemented-c", "memory.MemoryException-c", "cpu.DecodeException-c", "linux.SymbolicFile-c", "cpu.DivideError-c", "cpu.Register256-c", "memory.MMapAnon-c", "memory.MMapFile-c", "smtlibv2.Array_-c", "smtlibv2.BitVec-c", "smtlibv2.Solver-c", "smtlibv2.Symbol-c", "cpu.Register16-c", "cpu.Register64-c", "memory.MMapCOW-c", "memory.SMemory-c", "smtlibv2.Array-c", "memory.Memory-c", "smtlibv2.Bool-c", "linux.SLinux-c", "linux.Linux-c", "memory.MMap-c", "linux.File-c", "smtlibv2-m", "cpu.Flag-c", "cpu.Cpu-c", "memory-m", "system-m", "linux-m", "cpu-m"];
+var dottedName = get_anchor();
+if (dottedName) {
+    var target = redirect_url(dottedName);
+    if (target) window.location.replace(target);
+}
+// -->
+</script>
+
+<h3>Epydoc Auto-redirect page</h3>
+
+<p>When javascript is enabled, this page will redirect URLs of
+the form <tt>redirect.html#<i>dotted.name</i></tt> to the
+documentation for the object with the given fully-qualified
+dotted name.</p>
+<p><a id="message"> &nbsp; </a></p>
+
+<script type="text/javascript">
+<!--
+if (dottedName) {
+    var msg = document.getElementById("message");
+    msg.innerHTML = "No documentation found for <tt>"+
+                    dottedName+"</tt>";
+}
+// -->
+</script>
+
+</body>
+</html>

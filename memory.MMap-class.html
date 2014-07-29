@@ -1,0 +1,935 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>memory.MMap</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="memory-module.html">Module&nbsp;memory</a> ::
+        Class&nbsp;MMap
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="memory.MMap-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class MMap</h1><p class="nomargin-top"><span class="codelink"><a href="memory-pysrc.html#MMap">source&nbsp;code</a></span></p>
+<pre class="base-tree">
+object --+
+         |
+        <strong class="uidshort">MMap</strong>
+</pre>
+
+<dl><dt>Known Subclasses:</dt>
+<dd>
+      <ul class="subclass-list">
+<li><a href="memory.MMapAnon-class.html">MMapAnon</a></li><li>, <a href="memory.MMapCOW-class.html">MMapCOW</a></li><li>, <a href="memory.MMapFile-class.html">MMapFile</a></li>  </ul>
+</dd></dl>
+
+<hr />
+<p>A map of memory.</p>
+  <p>It represents a convex chunk of memory with a start and an end 
+  address. It may be implemented as an actual file mapping or as a 
+  StringIO. It may have symbolic overlays. Some of it may be symbolic 
+  data.</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>          <span class="py-comment">####SS#######S################SSS####</span>
+<span class="py-output">              ^                                    ^</span>
+<span class="py-output">            start                                 end</span></pre>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.MMap-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">start</span>,
+        <span class="summary-sig-arg">size</span>,
+        <span class="summary-sig-arg">perms</span>,
+        <span class="summary-sig-arg">addressbitsize</span>,
+        <span class="summary-sig-arg">pagebitsize</span>)</span><br />
+      Builds a map of memory.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#MMap.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_getPerms"></a><span class="summary-sig-name">_getPerms</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Gets the access permissions of the map.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#MMap._getPerms">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.MMap-class.html#_setPerms" class="summary-sig-name" onclick="show_private();">_setPerms</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">perms</span>)</span><br />
+      Sets the access permissions of the map.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#MMap._setPerms">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__len__"></a><span class="summary-sig-name">__len__</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Returns the actual size in bytes of the mapping.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#MMap.__len__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">str</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.MMap-class.html#__str__" class="summary-sig-name">__str__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Returns the string representation of the map mapping.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#MMap.__str__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.MMap-class.html#isExecutable" class="summary-sig-name">isExecutable</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Returns true if this mapping contains executable memory.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#MMap.isExecutable">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.MMap-class.html#isWriteable" class="summary-sig-name">isWriteable</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Returns true if this mapping contains writeable memory.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#MMap.isWriteable">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.MMap-class.html#isReadable" class="summary-sig-name">isReadable</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Returns true if this mapping contain readable memory.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#MMap.isReadable">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.MMap-class.html#getchar" class="summary-sig-name">getchar</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">addr</span>)</span><br />
+      Generic getchar.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#MMap.getchar">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.MMap-class.html#putchar" class="summary-sig-name">putchar</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">addr</span>,
+        <span class="summary-sig-arg">data</span>)</span><br />
+      Generic putchar.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#MMap.putchar">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">tuple</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.MMap-class.html#select" class="summary-sig-name">select</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">start</span>,
+        <span class="summary-sig-arg">size</span>)</span><br />
+      Returns the selected map and a tuple with the remaining maps within 
+      this map.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#MMap.select">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">tuple</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.MMap-class.html#unmap" class="summary-sig-name">unmap</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">start</span>,
+        <span class="summary-sig-arg">size</span>)</span><br />
+      Removes a portion of this map.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#MMap.unmap">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.MMap-class.html#mprotect" class="summary-sig-name">mprotect</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">address</span>,
+        <span class="summary-sig-arg">size</span>,
+        <span class="summary-sig-arg">perms</span>)</span><br />
+      Changes the access permissions of a portion of this map.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#MMap.mprotect">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__getstate__"></a><span class="summary-sig-name">__getstate__</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#MMap.__getstate__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.MMap-class.html#__setstate__" class="summary-sig-name">__setstate__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">state</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#MMap.__setstate__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="memory.MMap-class.html#perms" class="summary-name">perms</a><br />
+      Gets the access permissions of the map.
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">start</span>,
+        <span class="sig-arg">size</span>,
+        <span class="sig-arg">perms</span>,
+        <span class="sig-arg">addressbitsize</span>,
+        <span class="sig-arg">pagebitsize</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#MMap.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Builds a map of memory.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>start</code></strong> - the first valid address.</li>
+        <li><strong class="pname"><code>size</code></strong> - the size of the map.</li>
+        <li><strong class="pname"><code>perms</code></strong> - the access permissions of the map.</li>
+        <li><strong class="pname"><code>addressbitsize</code></strong> - the size of an address in memory.</li>
+        <li><strong class="pname"><code>pagebitsize</code></strong> - the size of a page in memory.</li>
+    </ul></dd>
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_setPerms"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_setPerms</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">perms</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#MMap._setPerms">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Sets the access permissions of the map.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>perms</code></strong> - the new permissions.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__str__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__str__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Informal representation operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#MMap.__str__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns the string representation of the map mapping.</p>
+  <dl class="fields">
+    <dt>Returns: str</dt>
+    <dt>Overrides:
+        object.__str__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="isExecutable"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isExecutable</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#MMap.isExecutable">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns true if this mapping contains executable memory.</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd><ul>
+            <li>
+              <code>True</code> if this mapping contains executable memory.
+            </li>
+            <li>
+              <code>False</code> if this mapping does not contain 
+              executable memory.
+            </li>
+          </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="isWriteable"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isWriteable</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#MMap.isWriteable">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns true if this mapping contains writeable memory.</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd><ul>
+            <li>
+              <code>True</code> if this mapping contains writeable memory.
+            </li>
+            <li>
+              <code>False</code> if this mapping does not contain writeable
+              memory.
+            </li>
+          </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="isReadable"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isReadable</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#MMap.isReadable">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns true if this mapping contain readable memory.</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd><ul>
+            <li>
+              <code>True</code> if this mapping contains readable memory.
+            </li>
+            <li>
+              <code>False</code> if this mapping does not contain readable 
+              memory
+            </li>
+          </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getchar"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getchar</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">addr</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#MMap.getchar">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Generic getchar. It returns the character at the specified address. It
+  may return a symbol. This relays in the implementation of self._getchar 
+  that depends on which type of mapping this really is; <a 
+  href="memory.MMapFile-class.html" class="link">MMapFile</a>, <a 
+  href="memory.MMapAnon-class.html" class="link">MMapAnon</a>.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>addr</code></strong> - the address where to obtain the char.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>the character or symbol at the specified address.</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'><a href="memory.MemoryException-class.html">MemoryException</a></strong></code> - if the address is not readable or is not in this mapping.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="putchar"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">putchar</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">addr</span>,
+        <span class="sig-arg">data</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#MMap.putchar">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Generic putchar. It sets the character at the specified address. The 
+  address and/or the data may be symbolic. This relays in the 
+  implementation of self._putchar that depends on which type of mapping 
+  this really is; <a href="memory.MMapFile-class.html" 
+  class="link">MMapFile</a>, <a href="memory.MMapAnon-class.html" 
+  class="link">MMapAnon</a>.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>addr</code></strong> - the address where to set the character.</li>
+        <li><strong class="pname"><code>data</code></strong> - a character to put in the address addr.</li>
+    </ul></dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'><a href="memory.MemoryException-class.html">MemoryException</a></strong></code> - if the address is not writable or is not in this mapping.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="select"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">select</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">start</span>,
+        <span class="sig-arg">size</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#MMap.select">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns the selected map and a tuple with the remaining maps within 
+  this map.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>start</code></strong> - the start address of the selected map.</li>
+        <li><strong class="pname"><code>size</code></strong> - the size of the selected map.</li>
+    </ul></dd>
+    <dt>Returns: tuple</dt>
+        <dd><ul>
+            <li>
+              If the selected portion is not overlapped with this map:
+              <ul>
+                <li>
+                  <code>None</code>, (<code>self</code>, )
+                </li>
+              </ul>
+            </li>
+            <li>
+              If the selected portion starts within this map but ends 
+              beyond this map:
+              <ul>
+                <li>
+                  map&lt;<code>start</code>, <code>self.end</code>&gt;, 
+                  (map&lt;<code>self.start</code>, 
+                  <code>start-1</code>&gt;, )
+                </li>
+              </ul>
+            </li>
+            <li>
+              If the selected portion fits within this map:
+              <ul>
+                <li>
+                  map&lt;<code>start</code>, <code>start+size</code>&gt;, 
+                  (map&lt;<code>self.start</code>, 
+                  <code>start-1</code>&gt;, 
+                  map&lt;<code>start+size+1</code>, 
+                  <code>self.end</code>&gt;)
+                </li>
+              </ul>
+            </li>
+            <li>
+              If just the last part of the selected portion is overlapped 
+              with this map:
+              <ul>
+                <li>
+                  map&lt;<code>self.start</code>, 
+                  <code>start+size</code>&gt;, 
+                  (map&lt;<code>start+size+1</code>, 
+                  <code>self.end</code>&gt;, )
+                </li>
+              </ul>
+            </li>
+            <li>
+              If this map is contained in the selected portion:
+              <ul>
+                <li>
+                  <code>self</code>, <code>tuple()</code>
+                </li>
+              </ul>
+            </li>
+          </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="unmap"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">unmap</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">start</span>,
+        <span class="sig-arg">size</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#MMap.unmap">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Removes a portion of this map.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>start</code></strong> - the address where the portion to remove begins.</li>
+        <li><strong class="pname"><code>size</code></strong> - the size of the portion to remove.</li>
+    </ul></dd>
+    <dt>Returns: tuple</dt>
+        <dd>a tuple containing the two maps generated after the portion was 
+          removed.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="mprotect"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">mprotect</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">address</span>,
+        <span class="sig-arg">size</span>,
+        <span class="sig-arg">perms</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#MMap.mprotect">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Changes the access permissions of a portion of this map.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>address</code></strong> - the address where the portion to change the permissions begins.</li>
+        <li><strong class="pname"><code>size</code></strong> - the size of the portion to change the permissions.</li>
+        <li><strong class="pname"><code>perms</code></strong> - the new permissions to assign to the portion of the map.</li>
+    </ul></dd>
+    <dt>Returns: list</dt>
+        <dd><ul>
+            <li>
+              the list of maps with their corresponding permissions:
+              <ul>
+                <li>
+                  first two elements of this list are the previous and next
+                  maps to the portion where the permissions have changed.
+                </li>
+                <li>
+                  last element of this list is the portion map with changed
+                  permissions.
+                </li>
+              </ul>
+            </li>
+          </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__setstate__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__setstate__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">state</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#MMap.__setstate__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+  </dl>
+<div class="fields">      <p><strong>To Do:</strong>
+        some asserts
+      </p>
+</div></td></tr></table>
+</div>
+<br />
+<!-- ==================== PROPERTY DETAILS ==================== -->
+<a name="section-PropertyDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Property Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-PropertyDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="perms"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">perms</h3>
+  <p>Gets the access permissions of the map.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><a href="memory.MMap-class.html#_getPerms" class="summary-sig-name" onclick="show_private();">_getPerms</a>(<span class="summary-sig-arg">self</span>)</span>
+        - Gets the access permissions of the map.
+    </dd>
+    <dt>Set Method:</dt>
+    <dd class="value"><span class="summary-sig"><a href="memory.MMap-class.html#_setPerms" class="summary-sig-name" onclick="show_private();">_setPerms</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">perms</span>)</span>
+        - Sets the access permissions of the map.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue Jul 29 12:39:47 2014
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

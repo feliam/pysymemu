@@ -1,0 +1,1222 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>memory.Memory</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="memory-module.html">Module&nbsp;memory</a> ::
+        Class&nbsp;Memory
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="memory.Memory-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Memory</h1><p class="nomargin-top"><span class="codelink"><a href="memory-pysrc.html#Memory">source&nbsp;code</a></span></p>
+<pre class="base-tree">
+object --+
+         |
+        <strong class="uidshort">Memory</strong>
+</pre>
+
+<dl><dt>Known Subclasses:</dt>
+<dd>
+      <ul class="subclass-list">
+<li><a href="memory.SMemory-class.html">SMemory</a></li>  </ul>
+</dd></dl>
+
+<hr />
+<p>The memory manager. This class handles all virtual memory mappings and
+  symbolic chunks.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.Memory-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">addressbitsize</span>=<span class="summary-sig-default">32</span>,
+        <span class="summary-sig-arg">pagebitsize</span>=<span class="summary-sig-default">12</span>)</span><br />
+      Builds a memory chunk.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.Memory-class.html#_ceil" class="summary-sig-name" onclick="show_private();">_ceil</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">address</span>)</span><br />
+      Returns the smallest page boundary value not less than the address.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory._ceil">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.Memory-class.html#_floor" class="summary-sig-name" onclick="show_private();">_floor</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">address</span>)</span><br />
+      Returns largest page boundary value not greater than the address.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory._floor">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.Memory-class.html#_page" class="summary-sig-name" onclick="show_private();">_page</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">address</span>)</span><br />
+      Calculates the page number of an address.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory._page">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.Memory-class.html#_search" class="summary-sig-name" onclick="show_private();">_search</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">size</span>,
+        <span class="summary-sig-arg">start</span>=<span class="summary-sig-default">268435456</span>,
+        <span class="summary-sig-arg">counter</span>=<span class="summary-sig-default">0</span>)</span><br />
+      Recursively searches the address space for enough free space to 
+      allocate <code>size</code> bytes.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory._search">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.Memory-class.html#mmapFile" class="summary-sig-name">mmapFile</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">addr</span>,
+        <span class="summary-sig-arg">size</span>,
+        <span class="summary-sig-arg">perms</span>,
+        <span class="summary-sig-arg">filename</span>,
+        <span class="summary-sig-arg">offset</span>=<span class="summary-sig-default">0</span>)</span><br />
+      Creates a new file mapping in the memory address space.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory.mmapFile">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.Memory-class.html#mmap" class="summary-sig-name">mmap</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">addr</span>,
+        <span class="summary-sig-arg">size</span>,
+        <span class="summary-sig-arg">perms</span>,
+        <span class="summary-sig-arg">data_init</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Creates a new mapping in the memory address space.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory.mmap">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.Memory-class.html#mappings" class="summary-sig-name">mappings</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Returns a sorted list of all the mappings for this memory.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory.mappings">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.Memory-class.html#__str__" class="summary-sig-name">__str__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      str(x)</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory.__str__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.Memory-class.html#munmap" class="summary-sig-name">munmap</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">start</span>,
+        <span class="summary-sig-arg">size</span>)</span><br />
+      Deletes the mappings for the specified address range and causes 
+      further references to addresses within the range to generate invalid 
+      memory references.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory.munmap">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.Memory-class.html#mprotect" class="summary-sig-name">mprotect</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">start</span>,
+        <span class="summary-sig-arg">size</span>,
+        <span class="summary-sig-arg">perms</span>)</span><br />
+      Changes the access permissions to the memory mapped in the specified 
+      range.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory.mprotect">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><a href="memory.MMap-class.html" class="link">MMap</a></span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.Memory-class.html#_getMap" class="summary-sig-name" onclick="show_private();">_getMap</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">address</span>)</span><br />
+      Returns the <a href="memory.MMap-class.html" class="link">MMap</a> 
+      object containing the address.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory._getMap">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">str</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.Memory-class.html#getPermissions" class="summary-sig-name">getPermissions</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">address</span>)</span><br />
+      Returns the permissions of an address.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory.getPermissions">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.Memory-class.html#isValid" class="summary-sig-name">isValid</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">address</span>)</span><br />
+      Returns <code>True</code> if <code>address</code> is a valid mapped 
+      address.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory.isValid">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.Memory-class.html#isExecutable" class="summary-sig-name">isExecutable</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">address</span>)</span><br />
+      Returns <code>True</code> if <code>address</code> is executable.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory.isExecutable">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.Memory-class.html#isWriteable" class="summary-sig-name">isWriteable</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">address</span>)</span><br />
+      Returns <code>True</code> if <code>address</code> is writable.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory.isWriteable">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.Memory-class.html#isReadable" class="summary-sig-name">isReadable</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">address</span>)</span><br />
+      Returns <code>True</code> if <code>address</code> is readable.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory.isReadable">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.Memory-class.html#putchar" class="summary-sig-name">putchar</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">addr</span>,
+        <span class="summary-sig-arg">data</span>)</span><br />
+      Memory based putchar implementation.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory.putchar">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">str[1]</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="memory.Memory-class.html#getchar" class="summary-sig-name">getchar</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">addr</span>)</span><br />
+      Memory based getchar implementation.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory.getchar">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__getstate__"></a><span class="summary-sig-name">__getstate__</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory.__getstate__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__setstate__"></a><span class="summary-sig-name">__setstate__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">state</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="memory-pysrc.html#Memory.__setstate__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">addressbitsize</span>=<span class="sig-default">32</span>,
+        <span class="sig-arg">pagebitsize</span>=<span class="sig-default">12</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#Memory.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Builds a memory chunk.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>addressbitsize</code></strong> - size in bits of the address space (default=32).</li>
+        <li><strong class="pname"><code>pagebitsize</code></strong> - size in bits of the page boundary (default=12).</li>
+    </ul></dd>
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_ceil"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_ceil</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">address</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#Memory._ceil">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns the smallest page boundary value not less than the 
+  address.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>address</code></strong> - the address to calculate its ceil.</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>the ceil of <code>address</code>.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_floor"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_floor</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">address</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#Memory._floor">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns largest page boundary value not greater than the address.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>address</code></strong> - the address to calculate its floor.</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>the floor of <code>address</code>.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_page"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_page</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">address</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#Memory._page">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Calculates the page number of an address.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>address</code></strong> - the address to calculate its page number.</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>the page number address of <code>address</code>.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_search"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_search</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">size</span>,
+        <span class="sig-arg">start</span>=<span class="sig-default">268435456</span>,
+        <span class="sig-arg">counter</span>=<span class="sig-default">0</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#Memory._search">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Recursively searches the address space for enough free space to 
+  allocate <code>size</code> bytes.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>size</code></strong> - the size in bytes to allocate.</li>
+        <li><strong class="pname"><code>start</code></strong> - an address from where to start the search.</li>
+        <li><strong class="pname"><code>counter</code></strong> - internal parameter to know if all the memory was already scanned.</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>the address of an available space to map <code>size</code> bytes.</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'><a href="memory.MemoryException-class.html">MemoryException</a></strong></code> - if there is no space available to allocate the desired memory.</li>
+    </ul></dd>
+  </dl>
+<div class="fields">      <p><strong>To Do:</strong>
+        Document what happens when you try to allocate something that goes 
+    round the address 32/64 bit representation.
+      </p>
+</div></td></tr></table>
+</div>
+<a name="mmapFile"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">mmapFile</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">addr</span>,
+        <span class="sig-arg">size</span>,
+        <span class="sig-arg">perms</span>,
+        <span class="sig-arg">filename</span>,
+        <span class="sig-arg">offset</span>=<span class="sig-default">0</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#Memory.mmapFile">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Creates a new file mapping in the memory address space.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>addr</code></strong> - the starting address (took as hint). If <code>addr</code> is 
+          <code>0</code> the first big enough chunk of memory will be 
+          selected as starting address.</li>
+        <li><strong class="pname"><code>size</code></strong> - the contents of a file mapping are initialized using 
+          <code>size</code> bytes starting at offset <code>offset</code> in
+          the file <code>filename</code>.</li>
+        <li><strong class="pname"><code>perms</code></strong> - the access permissions to this memory.</li>
+        <li><strong class="pname"><code>filename</code></strong> - the pathname to the file to map.</li>
+        <li><strong class="pname"><code>offset</code></strong> - the contents of a file mapping are initialized using 
+          <code>size</code> bytes starting at offset <code>offset</code> in
+          the file <code>filename</code>.</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>the starting address where the file was mapped.</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>error</strong></code> - <ul>
+          <li>
+            &quot;Address shall be concrete&quot; if <code>addr</code> is 
+            not an integer number.
+          </li>
+          <li>
+            &quot;Address too big&quot; if <code>addr</code> goes beyond 
+            the limit of the memory.
+          </li>
+          <li>
+            &quot;Map already used&quot; if the piece of memory starting in
+            <code>addr</code> and with length <code>size</code> isn't free.
+          </li>
+        </ul></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="mmap"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">mmap</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">addr</span>,
+        <span class="sig-arg">size</span>,
+        <span class="sig-arg">perms</span>,
+        <span class="sig-arg">data_init</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#Memory.mmap">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Creates a new mapping in the memory address space.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>addr</code></strong> - the starting address (took as hint). If <code>addr</code> is 
+          <code>0</code> the first big enough chunk of memory will be 
+          selected as starting address.</li>
+        <li><strong class="pname"><code>size</code></strong> - the length of the mapping.</li>
+        <li><strong class="pname"><code>perms</code></strong> - the access permissions to this memory.</li>
+        <li><strong class="pname"><code>data_init</code></strong> - optional data to initialize this memory.</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>the starting address where the memory was mapped.</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>error</strong></code> - <ul>
+          <li>
+            &quot;Address shall be concrete&quot; if <code>addr</code> is 
+            not an integer number.
+          </li>
+          <li>
+            &quot;Address too big&quot; if <code>addr</code> goes beyond 
+            the limit of the memory.
+          </li>
+          <li>
+            &quot;Map already used&quot; if the piece of memory starting in
+            <code>addr</code> and with length <code>size</code> isn't free.
+          </li>
+        </ul></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="mappings"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">mappings</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#Memory.mappings">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns a sorted list of all the mappings for this memory.</p>
+  <dl class="fields">
+    <dt>Returns: list</dt>
+        <dd>a list of mappings.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__str__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__str__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Informal representation operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#Memory.__str__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>str(x)</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__str__
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="munmap"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">munmap</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">start</span>,
+        <span class="sig-arg">size</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#Memory.munmap">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Deletes the mappings for the specified address range and causes 
+  further references to addresses within the range to generate invalid 
+  memory references.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>start</code></strong> - the starting address to delete.</li>
+        <li><strong class="pname"><code>size</code></strong> - the length of the unmapping.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="mprotect"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">mprotect</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">start</span>,
+        <span class="sig-arg">size</span>,
+        <span class="sig-arg">perms</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#Memory.mprotect">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Changes the access permissions to the memory mapped in the specified 
+  range.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>start</code></strong> - start range address.</li>
+        <li><strong class="pname"><code>size</code></strong> - size of the range.</li>
+        <li><strong class="pname"><code>perms</code></strong> - new permissions for the memory within the range.</li>
+    </ul></dd>
+  </dl>
+<div class="fields">      <strong>To Do:</strong>
+      <ul class="nomargin-top">
+        <li>
+        fix when fail return True./False/Exception?
+        </li>
+        <li>
+        check perms and what happens if the same of existent perms.
+        </li>
+      </ul>
+</div></td></tr></table>
+</div>
+<a name="_getMap"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_getMap</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">address</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#Memory._getMap">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns the <a href="memory.MMap-class.html" class="link">MMap</a> 
+  object containing the address.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>address</code></strong> - the address to obtain its mapping.</li>
+    </ul></dd>
+    <dt>Returns: <a href="memory.MMap-class.html" class="link">MMap</a></dt>
+  </dl>
+<div class="fields">      <p><strong>To Do:</strong>
+        symbolic address
+      </p>
+</div></td></tr></table>
+</div>
+<a name="getPermissions"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getPermissions</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">address</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#Memory.getPermissions">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns the permissions of an address.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>address</code></strong> - the address to obtain its permissions.</li>
+    </ul></dd>
+    <dt>Returns: str</dt>
+  </dl>
+<div class="fields">      <p><strong>To Do:</strong>
+        symbolic address
+      </p>
+</div></td></tr></table>
+</div>
+<a name="isValid"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isValid</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">address</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#Memory.isValid">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns <code>True</code> if <code>address</code> is a valid mapped 
+  address.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>address</code></strong> - the address to know if it is valid or not.</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd><ul>
+            <li>
+              <code>True</code> if the address is a valid mapped address.
+            </li>
+            <li>
+              <code>False</code> if the address is not a valid mapped 
+              address.
+            </li>
+          </ul></dd>
+  </dl>
+<div class="fields">      <p><strong>To Do:</strong>
+        symbolic address
+      </p>
+</div></td></tr></table>
+</div>
+<a name="isExecutable"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isExecutable</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">address</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#Memory.isExecutable">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns <code>True</code> if <code>address</code> is executable.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>address</code></strong> - the address to know if it is executable or not.</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd><ul>
+            <li>
+              <code>True</code> if the address is executable.
+            </li>
+            <li>
+              <code>False</code> if the address is not executable.
+            </li>
+          </ul></dd>
+  </dl>
+<div class="fields">      <p><strong>To Do:</strong>
+        symbolic address
+      </p>
+</div></td></tr></table>
+</div>
+<a name="isWriteable"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isWriteable</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">address</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#Memory.isWriteable">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns <code>True</code> if <code>address</code> is writable.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>address</code></strong> - the address to know if it is writable or not.</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd><ul>
+            <li>
+              <code>True</code> if the address is writable.
+            </li>
+            <li>
+              <code>False</code> if the address is not writable.
+            </li>
+          </ul></dd>
+  </dl>
+<div class="fields">      <p><strong>To Do:</strong>
+        symbolic address
+      </p>
+</div></td></tr></table>
+</div>
+<a name="isReadable"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isReadable</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">address</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#Memory.isReadable">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns <code>True</code> if <code>address</code> is readable.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>address</code></strong> - the address to know if it is readable or not.</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd><ul>
+            <li>
+              <code>True</code> if the address is readable.
+            </li>
+            <li>
+              <code>False</code> if the address is not readable.
+            </li>
+          </ul></dd>
+  </dl>
+<div class="fields">      <p><strong>To Do:</strong>
+        symbolic address
+      </p>
+</div></td></tr></table>
+</div>
+<a name="putchar"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">putchar</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">addr</span>,
+        <span class="sig-arg">data</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#Memory.putchar">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Memory based putchar implementation.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>addr</code></strong> - the address where to put the data.</li>
+        <li><strong class="pname"><code>data</code></strong> - character to put in this address of memory.</li>
+    </ul></dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>MemoryExcetion</strong></code> - if the address is not mapped.</li>
+    </ul></dd>
+  </dl>
+<div class="fields">      <p><strong>To Do:</strong>
+        if addr is Readable/Executable?
+      </p>
+</div></td></tr></table>
+</div>
+<a name="getchar"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getchar</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">addr</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="memory-pysrc.html#Memory.getchar">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Memory based getchar implementation.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>addr</code></strong> - the address where to obtain the character.</li>
+    </ul></dd>
+    <dt>Returns: str[1]</dt>
+        <dd>the character at the specified address.</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>MemoryExcetion</strong></code> - if the address is not mapped.</li>
+    </ul></dd>
+  </dl>
+<div class="fields">      <p><strong>To Do:</strong>
+        if addr is Readable/Executable?
+      </p>
+</div></td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue Jul 29 12:39:47 2014
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>
