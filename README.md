@@ -1,17 +1,32 @@
 PySymEmu
 ========
 
-An intel 64 symbolic emulator. 
+A symbolic execution engine for x86/x64 binaries
 
 Ekoparty slides: https://github.com/feliam/pysymemu/blob/master/doc/pysymemu.pdf?raw=true
 
 API documentation: http://feliam.github.io/pysymemu/
 
+Features:
+---------
+* Implements most x86/amd64 instructions
+* Loads ELF32 and ELF64 files
+* Enables to recreate specific machine states by API
+* Instruccion semantics *easy* to read and extend
+* Instruction set can operate in concrete or symbolic values
+* Concrete and symbolic memory model
+* Emulation and symbolic states serialiable, meaning that analisys can be paused/resumed or paralellized(dispy.sourceforge.net)
+* POSIX system calls modeled (Linux32 and Linux64)
+* Automatic generation of instruction testcases / heavelly unittested
+* API and instruction documentation
+
+
 Dependencies:
 -------------
+* distorm3, a disassembler. https://code.google.com/p/distorm/
 * z3, an smt solver. http://z3.codeplex.com/ (1)
 * pyelftool, an ELF parsing library. https://github.com/eliben/pyelftools
-* distorm3, a disassembler. https://code.google.com/p/distorm/
+
 
 Directory structure
 -------------------
