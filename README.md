@@ -27,6 +27,20 @@ Dependencies:
 * z3, an smt solver. http://z3.codeplex.com/ (1)
 * pyelftool, an ELF parsing library. https://github.com/eliben/pyelftools
 
+Quick install of deps?
+```
+  echo Installing distorm3
+  svn checkout http://distorm.googlecode.com/svn/trunk/ distorm-read-only
+  cd distorm-read-only
+  python setup.py install
+  cd ..
+  echo Installing pyelftools
+  https://github.com/eliben/pyelftools.git
+  cd pyelftools
+  python setup.py install
+  cd ..
+  #Lets say Z3 depends on arch... 
+```
 
 Directory structure
 -------------------
