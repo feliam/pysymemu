@@ -14,8 +14,8 @@ Features:
 * Enables to recreate specific machine states by API
 * Instruccion semantics *easy* to read and extend
 * Instruction set can operate in concrete or symbolic values
-* Concrete and symbolic memory model
-* Emulation and symbolic states serialiable, meaning that analisys can be paused/resumed or paralellized(dispy.sourceforge.net)
+* Memory modeled so it can be concrete or symbolic (and is COW-enabled) 
+* Emulation and symbolic states serialiable, meaning that the analisys can be paused/resumed or paralellized(dispy.sourceforge.net)
 * POSIX system calls modeled (Linux32 and Linux64)
 * Automatic generation of instruction testcases / heavelly unittested
 * API and instruction documentation
