@@ -17,7 +17,7 @@ Features:
 * Memory modeled so it can be concrete or symbolic (and is COW-enabled) 
 * Emulation and symbolic states serialiable, meaning that the analisys can be paused/resumed or paralellized(dispy.sourceforge.net)
 * POSIX system calls modeled (Linux32 and Linux64)
-* Automatic generation of instruction testcases / heavelly unittested
+* Automatic generation of instruction testcases
 * API and instruction documentation
 
 
