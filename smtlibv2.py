@@ -333,7 +333,7 @@ class BitVec(Symbol):
         return BitVec(self.size, 'bvurem', self, self.cast(other), solver=self.solver)
 
     @goaux_bv
-    def rrem(self, other):
+    def rurem(self, other):
         return BitVec(self.size, 'bvurem', self.cast(other), self, solver=self.solver)
 
 #Booleans
@@ -746,7 +746,7 @@ class Solver(object):
         ''' Creates a symbols array in the constrains store and names it name'''
         assert size in [8,16,32,64]
         if name in self._declarations:
-            print "INDECLS ALREADY!!!"
+            print "INDECLS ALREADY!!!", name
             name = '%s_%d'%(name, self._get_sid())
         arr = Array(size, name, solver=self)
         self._declarations[name] = arr #.array
@@ -803,7 +803,7 @@ def isconcrete(x):
 
 ################################################################################
 #friend operations
-def AND(a, b):
+def AND(a,b):
     return a & b 
 
 def OR(a, b):
@@ -881,7 +881,7 @@ def UDIV(a,b):
     if type(a) is BitVec:
         return a.udiv(b)
     elif type(b) is BitVec:
-        return a.rudiv(b)
+        return b.rudiv(a)
     if a<0 or b<0:
         raise "azaraza"
     return a/b
