@@ -98,6 +98,8 @@ folder = tempfile.mkdtemp(prefix=args.worspace, dir='./')
 solver = Solver()
 mem = SMemory(solver, bits,12)
 linux = SLinux(solver, [Cpu(mem, arch)], mem, symbolic_files=args.sym)
+
+print "Symbolic files: ", args.sym
 del solver
 del mem
 
@@ -122,7 +124,7 @@ for i in range(len(args.argv)):
 env = [ '%s=%s' % (key, val) for (key,val) in os.environ.items() ]
 for i in range(len(args.env)):
     if WILDCARD in args.env[i]:
-        print "Environment variable %d has simbols"%i
+        print "Environment variable %d has symbols"%i
         name = "ENV%d"%i
         size = len(args.env[i])
         senv = linux.solver.mkArray(name=name, is_input=True, max_size=size)
@@ -137,7 +139,9 @@ linux.exe(args.program, argv, env, stdin=args.stdin, stdout=args.stdout, stderr=
 del env
 del argv
 
-pickle.dump(linux,file(folder+os.sep+'dump_init.pkl','w+'),2)
+with file(folder+os.sep+'dump_init.pkl','w+') as f:
+    pickle.dump(linux,f ,2)
+
 time_start = time.clock()
 count = 0
 test_case_no = 0
@@ -149,7 +153,7 @@ def get_state():
         nnstates.setdefault(nn.split("_")[1], set()).add(nn)
     nncounts = [ (x, len(nnstates[x])) for x in nnstates.keys()]
     #print '\n'.join(map(str, nncounts))
-    nncount_min = min(nncounts, key=lambda (a,b):b)
+    nncount_min = min(nncounts, key=lambda(a,b): b)
     l = [x for x in states if nncount_min[0] in x]
     random.shuffle(l)
     st = l.pop()
@@ -171,7 +175,7 @@ def generate_testcase(linux):
             print symbol, type(symbol)
             raise NotImplemented
         file(folder+os.sep+'test_%d.txt'%test_case_no,'a').write("%s: %s\n"%(symbol.name, repr(buf)))
-print "starting"
+print "Starting..."
 try:
     while len(states) !=0:
         #select a suitable state to analize
@@ -188,6 +192,10 @@ try:
                     #get all possible PC destinations (raise if more tahn 100 options)
                     vals = list(linux.solver.getallvalues(linux.cpu.PC, maxcnt = 100))
                     print "Symbolic PC found, possible detinations are: ", ["%x"%x for x in vals]
+                    #import pdb
+                    #pdb.set_trace()
+                    
+
                     #Shuffle the possibilities, 
                     random.shuffle(vals)
                     #we will keep one state for the current analisys and save 
@@ -201,13 +209,15 @@ try:
                         linux.solver.add(current_pc == new_pc)
                         #and set the PC to the concretye destination
                         linux.cpu.PC = new_pc
-                        pickle.dump(linux,file(folder+os.sep+name,'w+'),2)
+                        with file(folder+os.sep+name,'w+') as f:
+                            pickle.dump(linux, f, 2)
                         linux.solver.pop()
                         #add the state to the list of pending states
                         states.append(name)
 
                     #keep analizing one of the states already loaded up
                     new_pc = vals[0]
+
                     name = 'dump_%016x_%d.pkl'%(new_pc, linux.cpu.icount)
                     linux.solver.add(current_pc == new_pc)
                     linux.cpu.PC = new_pc
@@ -231,11 +241,14 @@ try:
                         print "EEXXXXX",e,linux.cpu.IF
                         pass
                     linux.cpu.IF = linux.solver.simplify(linux.cpu.IF)
+                    linux.cpu.RAX = linux.solver.simplify(linux.cpu.RAX)
                     linux.cpu.RCX = linux.solver.simplify(linux.cpu.RCX)
                     linux.cpu.RSI = linux.solver.simplify(linux.cpu.RSI)
                     linux.cpu.RDI = linux.solver.simplify(linux.cpu.RDI)
                     #save a checkpoint of the current state
                     pickle.dump(linux,file(folder+os.sep+name,'w+'),2)
+
+
 
                     '''
                     if len(vals)>1:
@@ -284,6 +297,10 @@ try:
                     '''
                     new_pc=None
                     vals = None
+
+#                print "="*80
+#                print "INSTRUCTION: %016x %s"% (linux.cpu.PC, linux.cpu.instruction)
+#                print linux.cpu.dumpregs()
                 count += 1
         except Exception,e:
             test_case_no+=1

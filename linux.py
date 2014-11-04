@@ -1047,6 +1047,10 @@ class Linux(object):
         logger.debug("SIGACTION, Ignoring chaging signal handler for signal %d", signum)
         return 0
 
+    def sys_sigprocmask(self, how, newset, oldset):
+        logger.debug("SIGACTION, Ignoring chaging signal mask set cmd:%d", how)
+        return 0
+
     #Distpatchers...
     def syscall(self, cpu):
         ''' 
@@ -1055,6 +1059,7 @@ class Linux(object):
         '''
         syscalls = { 0x000000000000003f: self.sys_uname, 
                  0x000000000000000c: self.sys_brk, 
+                 0x000000000000000e: self.sys_sigprocmask,
                  0x000000000000009e: self.sys_arch_prctl,
                  0x0000000000000002: self.sys_open,
                  0x0000000000000000: self.sys_read,
@@ -1062,6 +1067,10 @@ class Linux(object):
                  0x0000000000000005: self.sys_fstat64,
                  0x0000000000000009: self.sys_mmap,
                  0x0000000000000001: self.sys_write,
+                 0x0000000000000066: self.sys_getuid,
+                 0x0000000000000068: self.sys_getgid,
+                 0x000000000000006b: self.sys_geteuid,
+                 0x000000000000006c: self.sys_getegid,
                  0x00000000000000e7: self.sys_exit_group,
                  0x0000000000000015: self.sys_access,
                  0x000000000000000a: self.sys_mprotect,
@@ -1282,9 +1291,16 @@ class SLinux(Linux):
         # perms: file permission mode
         filename = self._read_string(cpu, buf)
 
-        f = File(filename) #todo modes, flags
+        try :
+            logger.debug("Openning file: %s",filename)
+            f = File(filename) #todo modes, flags
+        except Exception,e:
+            logger.debug("Could not open file %s. Reason %s"%(filename,str(e)))
+            return -1
         if filename in self.symbolic_files:
-            f = SymbolicFile(self.solver, f, mode)
+            logger.debug("%s file is considered to have symbols."%filename)
+            assert flags&7 == os.O_RDWR or flags&7 == os.O_RDONLY, "Symbolic files should be readable?"
+            f = SymbolicFile(self.solver, f, 'r')
 
         if None in self.files:
             fd = self.files.index(None)

@@ -418,7 +418,7 @@ class Cpu(object):
                 'XMM8', 'XMM9', 'XMM10', 'XMM11', 'XMM12', 'XMM13', 'XMM14', 
                 'XMM15', 'YMM0', 'YMM1', 'YMM2', 'YMM3', 'YMM4', 'YMM5', 'YMM6',
                 'YMM7', 'YMM8', 'YMM9', 'YMM10', 'YMM11', 'YMM12', 'YMM13', 
-                'YMM14', 'YMM15']
+                'YMM14', 'YMM15','CF','SF','ZF','OF','AF', 'PF', 'IF']
 
     def setRegister(self, name, value):
         '''
@@ -610,31 +610,22 @@ class Cpu(object):
         for reg_name in ['RAX', 'RCX', 'RDX', 'RBX', 'RSP', 'RBP', 'RSI', 'RDI', 'R8', 'R9', 'R10', 'R11', 'R12', 'R13', 'R14', 'R15',  'RIP',]:
             value = getattr(self, reg_name)
             if issymbolic(value):
-                result += "%s: "%reg_name + CFAIL+"%16s"%value+CEND+'\n'
+                result += "%3s: "%reg_name + CFAIL+"%16s"%value+CEND+''
             else:
-                result += "%s: 0x%016x"%(reg_name, value)
-
-            if pos < 80-25:
-                pos += 25
-                result += '\t'
-            else:
-                pos =0
-                result += '\n'
+                result += "%3s: 0x%016x"%(reg_name, value)
+            pos = 0
+            result += '\n'
 
         pos = 0
         for reg_name in ['CF','SF','ZF','OF','AF', 'PF', 'IF']:
             value = getattr(self, reg_name)
             if issymbolic(value):
-                result += "%s:"%reg_name + CFAIL+ "%16s\n"%value+CEND
+                result += "%s:"%reg_name + CFAIL+ "%16s"%value+CEND
             else:
                 result += "%s: %1x"%(reg_name, value)
 
-            if pos < 80-25:
-                pos += 25
-                result += '\t'
-            else:
-                pos =0
-                result += '\n'
+            pos = 0
+            result += '\n'
 
         return result
 
@@ -747,12 +738,14 @@ class Cpu(object):
         text = "".join(text)
         try:
             instruction = Decompose(pc, text, cpu.dmode)[0]
-        except:
+        except Exception, e:
+            print "DISTORM3:", e
             raise DecodeException(pc,text,'')
 
         if not instruction.valid:
             raise DecodeException(pc,text,'')
 
+        #BEGIN DISASSEMBLER HACK
         if instruction.mnemonic == 'POPF':
             instruction.operandSize = [16,32,64][(((instruction.rawFlags) >> 8) & 3)]
             instruction.addrSize = [16,32,64][(((instruction.rawFlags) >> 10) & 3)]
@@ -771,6 +764,7 @@ class Cpu(object):
         if instruction.mnemonic.startswith('CMPS') or instruction.mnemonic.startswith('SCAS'):
             if 'FLAG_REP' in instruction.flags:
                 instruction.flags[instruction.flags.index('FLAG_REP')]='FLAG_REPZ'
+        #END DISASSEMBLER HACK
 
         #Fix/aument opperands so it can access cpu/memory
         for op in instruction.operands:
@@ -982,7 +976,10 @@ class Cpu(object):
 
         #Check if we already have an implementation...
         if not hasattr(cpu, instruction.mnemonic):
-            raise InstructionNotImplemented( "Instruction %s at %x Not Implemented (text: %s)" % 
+            if instruction.mnemonic == 'UNDEFINED' and instruction.instructionBytes.encode('hex')=='66480f6ec2':
+                instruction.mnemonic = 'MOV'
+            else:
+                raise InstructionNotImplemented( "Instruction %s at %x Not Implemented (text: %s)" % 
                     (instruction.mnemonic, cpu.PC, instruction.instructionBytes.encode('hex')) )
         #log
         if logger.level == logging.DEBUG :
@@ -993,7 +990,7 @@ class Cpu(object):
         implementation(*instruction.operands)
         #housekeeping
         cpu.icount += 1
-        cpu.instruction=None
+        #cpu.instruction=None
 
     @instruction
     def CPUID(cpu):
@@ -1829,10 +1826,11 @@ class Cpu(object):
         @param cpu: current CPU.
         @param src: source operand.        
         '''
-        reg_name_h = { 16: 'AH', 32: 'DX', 64:'EDX', 128:'RDX'}[src.size]
-        reg_name_l = { 16: 'AL', 32: 'AX', 64:'EAX', 128:'RAX'}[src.size]
+        reg_name_h = { 16: 'AH', 32: 'DX', 64:'EDX', 128:'RDX'}[src.size*2]
+        reg_name_l = { 16: 'AL', 32: 'AX', 64:'EAX', 128:'RAX'}[src.size*2]
         dividend = CONCAT(src.size, cpu.getRegister(reg_name_h), cpu.getRegister(reg_name_l))
-        divisor = src.read()
+        #divisor = src.read()
+        divisor = ZEXTEND(src.read(), src.size * 2)
 
         if isinstance(divisor, (int,long)) and divisor == 0:
             raise DivideError()
@@ -1842,8 +1840,10 @@ class Cpu(object):
             raise DivideError()
         reminder = dividend % divisor
 
-        cpu.setRegister(reg_name_l, quotient)
-        cpu.setRegister(reg_name_h, reminder)
+        #cpu.setRegister(reg_name_l, quotient)
+        #cpu.setRegister(reg_name_h, reminder)
+        cpu.setRegister(reg_name_l, EXTRACT(quotient, 0, src.size))
+        cpu.setRegister(reg_name_h, EXTRACT(reminder, 0, src.size))
         #Flags Affected
         #The CF, OF, SF, ZF, AF, and PF flags are undefined.
 
@@ -3938,16 +3938,7 @@ class Cpu(object):
         cpu.SF = (res & SIGN_MASK)!=0
         cpu.ZF = (tempCount == 0) & cpu.ZF |  (tempCount != 0)&(res == 0)
 
-        '''
-        arg0 = dest.read()
-        arg1 = src.read()
-        arg2 = count.read() & (dest.size-1)
-        if arg2 == 0:
-            return
-        res = (arg0 >> arg2) | (arg1 << (dest.size-arg2))
-        dest.write(res)
-        cpu.CF = (arg0 >> (arg2-1))&1 !=0
-        '''
+
 
 ########################################################################################
 # Generic Operations
@@ -4356,8 +4347,27 @@ class Cpu(object):
         cpu.setRegister(dest_reg, cpu.getRegister(dest_reg) + increment)
 
 
-#@@@@@@@@@
+########################################################################################
+# MMX Operations
+########################################################################################
+# State Management: EMMS
+#
+########################################################################################
+    @instruction
+    def EMMS(cpu, dest, src):
+        '''
+        Empty MMX Technology State
 
+        Sets the values of all the tags in the x87 FPU tag word to empty (all 
+        1s). This operation marks the x87 FPU data registers (which are aliased 
+        to the MMX technology registers) as available for use by x87 FPU 
+        floating-point instructions.
+
+            x87FPUTagWord <- FFFFH;
+        '''
+        raise NotImplemented()
+
+#@@@@@@@@@
 
     @instruction
     def PXOR(cpu, dest, src):
@@ -4695,6 +4705,14 @@ class Cpu(object):
         cpu.RAX = SEXTEND(cpu.EAX,32,64)
 
     @instruction
+    def CDQ(cpu):
+        '''
+        EDX:EAX = sign-extend of EAX
+        '''
+        cpu.EDX = EXTRACT(SEXTEND(cpu.EAX, 32, 64), 32, 32)
+
+
+    @instruction
     def CWDE(cpu):
         ''' 
         Converts word to doubleword.
@@ -4973,16 +4991,56 @@ class Cpu(object):
             dest.write(ZEXTEND(src.read(), dest.size))
         elif dest.size < src.size:
             dest.write(EXTRACT(src.read(),0, dest.size))
+
+
+    @instruction
+    def VMOVDQA(cpu, dest, src):
+        '''
+        Move Aligned Double Quadword
+
+        Moves 128 bits of packed integer values from the source operand (second 
+        operand) to the destination operand (first operand). This instruction 
+        can be used to load an XMM register from a 128-bit memory location, to 
+        store the contents of an XMM register into a 128-bit memory location, or
+        to move data between two XMM registers. 
+
+        When the source or destination operand is a memory operand, the operand 
+        must be aligned on a 16-byte boundaryor a general-protection exception 
+        (#GP) will be generated. To move integer data to and from unaligned 
+        memorylocations, use the VMOVDQU instruction.'''
+        #TODO raise exception when unaligned!
+        dest.write(src.read())
+
     @instruction
     def VMOVDQU(cpu, dest, src):
-        ''' 
-Moves 128 bits of packed integer values from the source operand (second operand) to the destination operand
+        '''
+        Move Unaligned Double Quadword
+
+        Moves 128 bits of packed integer values from the source operand (second operand) to the destination operand
 (first operand). This instruction can be used to load an XMM register from a 128-bit memory location, to store the
-contents of an XMM register into a 128-bit memory location, or to move data between two XMM registers.
-When the source or destination operand is a memory operand, the operand must be aligned on a 16-byte boundary
-or a general-protection exception (#GP) will be generated. To move integer data to and from unaligned memory
-locations, use the VMOVDQU instruction.'''
-        raise Exception()
+contents of an XMM register into a 128-bit memory location, or to move data between two XMM registers. When
+the source or destination operand is a memory operand, the operand may be unaligned on a 16-byte boundary
+without causing a general-protection exception (#GP) to be generated.
+    
+VMOVDQU (VEX.128 encoded version)
+DEST[127:0] <- SRC[127:0]
+DEST[VLMAX-1:128] <- 0
+VMOVDQU (VEX.256 encoded version)
+DEST[255:0] <- SRC[255:0]
+'''
+        dest.write(src.read())
+
+    @instruction
+    def VEXTRACTF128(cpu, dest, src, offset):
+        '''Extract Packed Floating-Point Values
+
+        Extracts 128-bits of packed floating-point values from the source 
+        operand (second operand) at an 128-bit offset from imm8[0] into the 
+        destination operand (first operand). The destination may be either an 
+        XMM register or an 128-bit memory location. 
+        '''
+        offset=offset.read()
+        dest.write(EXTRACT(src.read(), offset*128 , (offset+1)*128))
 
     @instruction
     def PREFETCHT0(cpu, arg):
