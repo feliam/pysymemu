@@ -60,7 +60,7 @@ Tests
 -----
 You may use the discover command.
 
-``` $ python -m unittest discover```
+``` $ python -m unittest discover test```
 
 Note that cpu.py testcases are generated semi-automatically using tools at test/auto
 
