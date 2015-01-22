@@ -1,7 +1,7 @@
 PySymEmu
 ========
 
-A symbolic execution engine for x86/x64 binaries
+A symbolic execution tool, capable of automatically generating interesting inputs for x86/x64 binary programs.
 
 Ekoparty slides: https://github.com/feliam/pysymemu/blob/master/doc/pysymemu.pdf?raw=true
 
@@ -14,11 +14,13 @@ Features:
 * Enables to recreate specific machine states by API
 * Instruccion semantics *easy* to read and extend
 * Instruction set can operate in concrete or symbolic values
-* Memory modeled so it can be concrete or symbolic (and is COW-enabled) 
+* Memory modeled so it can be concrete or symbolic (and is COW-enabled)
+* Handles operations on symbolic pointers and indexes 
 * Emulation and symbolic states serialiable, meaning that the analisys can be paused/resumed or paralellized(dispy.sourceforge.net)
 * POSIX system calls modeled (Linux32 and Linux64)
 * Automatic generation of instruction testcases
 * API and instruction documentation
+* Automatic generation of intruction unittests
 
 
 Dependencies:
