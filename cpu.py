@@ -516,7 +516,7 @@ class Cpu(object):
         reg = 0
         for name, mask in self._flags.items():
             reg |= ITE(64, getattr(self, name), mask, 0)
-        return reg | (self.base_flags & ~ (0x00001|0x00004|0x00010|0x00040|0x00080|0x00400|0x00800|0x10000))
+        return reg | ZEXTEND(self.base_flags & ~ (0x00001|0x00004|0x00010|0x00040|0x00080|0x00400|0x00800|0x10000), 64)
 
     def getEFLAGS(self):
         '''
@@ -859,7 +859,7 @@ class Cpu(object):
         if op in ['ADC']:
             self.CF = OR(ULT(res, arg0), AND(self.CF,  res == arg0))
         elif op in ['ADD']:
-            self.CF = ULT(res, arg0)
+            self.CF = OR( ULT(res, arg0), ULT(res, arg1))
         elif op in ['CMP', 'SUB']:
             self.CF = ULT(arg0, arg1)
         elif op in ['SBB']:
@@ -976,15 +976,15 @@ class Cpu(object):
 
         #Check if we already have an implementation...
         if not hasattr(cpu, instruction.mnemonic):
-            if instruction.mnemonic == 'UNDEFINED' and instruction.instructionBytes.encode('hex')=='66480f6ec2':
-                instruction.mnemonic = 'MOV'
-            else:
-                raise InstructionNotImplemented( "Instruction %s at %x Not Implemented (text: %s)" % 
+            raise InstructionNotImplemented( "Instruction %s at %x Not Implemented (text: %s)" % 
                     (instruction.mnemonic, cpu.PC, instruction.instructionBytes.encode('hex')) )
         #log
         if logger.level == logging.DEBUG :
             for l in cpu.dumpregs().split('\n'):
                 logger.debug(l)
+        for l in cpu.dumpregs().split('\n'):
+            logger.debug(l)
+
         logger.debug("INSTRUCTION: %016x %s",cpu.PC, instruction)
         implementation = getattr(cpu, instruction.mnemonic)
         implementation(*instruction.operands)
@@ -3939,6 +3939,37 @@ class Cpu(object):
         cpu.ZF = (tempCount == 0) & cpu.ZF |  (tempCount != 0)&(res == 0)
 
 
+    @instruction
+    def SHLD(cpu, dest, src, count):
+        ''' 
+        Double precision shift right.
+        
+        Shifts the first operand (destination operand) to the left the number of bits specified by the third operand 
+        (count operand). The second operand (source operand) provides bits to shift in from the right (starting with 
+        the least significant bit of the destination operand). 
+        
+        @param cpu: current CPU.
+        @param dest: destination operand.
+        @param src: source operand.
+        @param count: count operand 
+        '''
+        OperandSize = dest.size
+        tempCount =  ZEXTEND(count.read(), OperandSize) & (OperandSize - 1)
+        arg0 = dest.read()
+        arg1 = src.read()
+
+        res = ITE(OperandSize, tempCount == 0, arg0,  (arg0 << tempCount) | (arg1 >> (dest.size-tempCount)))
+        dest.write(res)
+
+        #cpu.calculateFlags('SHR', OperandSize, res, tempDest, tempCount)
+        MASK = (1<<OperandSize)-1
+        SIGN_MASK = 1<<(OperandSize-1)
+        if tempCount > 0 :
+            cpu.CF = 0 != ((arg0 << (tempCount - 1))&SIGN_MASK) #Shift one less than normally and keep LSB
+
+        cpu.PF = (res ^ res>>1 ^ res>>2 ^ res>>3 ^ res>>4 ^ res>>5 ^ res>>6 ^ res>>7)&1 == 0
+        cpu.SF = (res & SIGN_MASK)!=0
+        cpu.ZF = (tempCount == 0) & cpu.ZF |  (tempCount != 0)&(res == 0)
 
 ########################################################################################
 # Generic Operations
@@ -4237,7 +4268,6 @@ class Cpu(object):
         '''
         size = dest.size
         raise NotImplemented()
-
 
     @rep
     def MOVS(cpu, dest, src):
@@ -4760,6 +4790,16 @@ class Cpu(object):
     def VMOVD(cpu, op0, op1):
         arg1 = op1.read()
         op0.write(arg1)
+    #MMX
+    @instruction
+    def VMOVUPS(cpu, op0, op1):
+        arg1 = op1.read()
+        op0.write(arg1)
+    @instruction
+    def VMOVAPS(cpu, op0, op1):
+        arg1 = op1.read()
+        op0.write(arg1)
+
 
     @instruction
     def VMOVQ(cpu, op0, op1):
@@ -4913,7 +4953,18 @@ class Cpu(object):
         or both of the corresponding bits of the first and second operands are 1; otherwise, it is set to 0.
         '''
         res = dest.write(dest.read()|src.read())
-        
+    @instruction
+    def XORPS(cpu, dest, src):
+        '''
+        Performs a bitwise logical OR operation on the source operand (second operand) and the destination operand 
+        (first operand) and stores the result in the destination operand. The source operand can be an MMX technology 
+        register or a 64-bit memory location or it can be an XMM register or a 128-bit memory location. The destination 
+        operand can be an MMX technology register or an XMM register. Each bit of the result is set to 1 if either 
+        or both of the corresponding bits of the first and second operands are 1; otherwise, it is set to 0.
+        '''
+        res = dest.write(dest.read()^src.read())
+
+ 
     @instruction
     def PTEST(cpu, dest, src):
         ''' PTEST
@@ -4993,6 +5044,38 @@ class Cpu(object):
             dest.write(EXTRACT(src.read(),0, dest.size))
 
 
+    def VMOVSD(cpu, dest, src):
+        cpu.MOVSD(dest, src)
+    @instruction
+    def MOVSD(cpu, dest, src):
+        ''' 
+        Move Scalar Double-Precision Floating-Point Value
+        
+        Moves a scalar double-precision floating-point value from the source 
+        operand (second operand) to the destination operand (first operand). 
+        The source and destination operands can be XMM registers or 64-bit memory
+        locations. This instruction can be used to move a double-precision 
+        floating-point value to and from the low quadword of an XMM register and
+        a 64-bit memory location, or to move a double-precision floating-point
+        value between the low quadwords of two XMM registers. The instruction 
+        cannot be used to transfer data between memory locations.
+        When the source and destination operands are XMM registers, the high 
+        quadword of the destination operand remains unchanged. When the source 
+        operand is a memory location and destination operand is an XMM registers,
+        the high quadword of the destination operand is cleared to all 0s.
+
+        @param cpu: current CPU.
+        @param dest: destination operand.
+        @param src: source operand.
+        '''
+        if dest.type == 'Register' and src.type=='Register' :
+            dest.write(src.read())
+        elif 'Memory' in dest.type and src.type == 'Register':
+            dest.write(src.read())
+        elif dest.type == 'Register' and 'Memory' in src.type:
+           dest.write( ZEXTEND(src.read(), dest.size) )
+        else:
+            raise NotImplemented()
     @instruction
     def VMOVDQA(cpu, dest, src):
         '''
@@ -5074,6 +5157,39 @@ DEST[255:0] <- SRC[255:0]
         Performs no operation.
         '''        
         pass
+    @instruction
+    def POPCNT(cpu, arg1, arg2):
+        '''
+        Not implemented.
+        
+        Performs no operation.
+        '''
+        pass
+
+
+    @instruction
+    def CVTSI2SD(cpu, dest,src):
+        raise NotImplemented()
+    @instruction
+    def PINSRW(cpu, dest, src, count):
+        if src.size == 64:
+            #PINSRW instruction with 64-bit source operand:
+            sel = count & 3
+            mask = [0x000000000000FFFF, 0x00000000FFFF0000, 0x0000FFFF00000000, 0xFFFF000000000000 ][sel]
+        else:
+            #PINSRW instruction with 128-bit source operand
+            assert src.size == 128
+            sel = count & 7
+            mask = [0x0000000000000000000000000000FFFF,0x000000000000000000000000FFFF0000,0x00000000000000000000FFFF00000000,0x0000000000000000FFFF000000000000,0x000000000000FFFF0000000000000000,0x00000000FFFF00000000000000000000,0x0000FFFF000000000000000000000000,0xFFFF0000000000000000000000000000][sel]
+        dest.write( (dest.read() & ~mask) |  ((src.read() << (sel * 16)) & mask) )
+
+    @instruction
+    def PEXTRW(cpu, dest, src, count):
+        if src.size == 64:
+            sel = EXTRACT(count.read(), 0, 2)
+        else:
+            sel = EXTRACT(count.read(), 0, 3)
+        dest.write(ZEXTEND( ((src.read() >> (sel * 16)) & 0xffff), dest.size))
 
     @instruction
     def PALIGNR(cpu, dest, src, offset):

@@ -230,7 +230,7 @@ class BitVec(Symbol):
 
     @goaux_bv
     def __rmod__(self, other):
-        return BitVec(self.size, 'bvmod', self.cast(other), self, solver=self.solver)
+        return BitVec(self.size, 'bvsmod', self.cast(other), self, solver=self.solver)
 
     @goaux_bv
     def __rtruediv__(self,other):
@@ -720,6 +720,8 @@ class Solver(object):
             return val
         self._send('(simplify %s  :expand-select-store true :pull-cheap-ite true )'%val)
         result = self._recv()
+        if "bvsmod_i" in result:
+            return val
 
         #TODO clean move casts somewhere else.  BitVec8, BitVec16, BitVec32, BitVec64, BitVec127 __new__() ?
         if type(val) is BitVec:
@@ -968,6 +970,8 @@ def chr(s):
             return s
         else:
             return BitVec(8, '(_ extract 7 0)', s, solver=s.solver)
-    else:
+    elif type(s) in  [int, long]:
         return _chr(s&0xff)
-
+    else:
+        assert len(s) == 1
+        return s

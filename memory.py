@@ -1047,6 +1047,7 @@ class SMemory(Memory):
             logger.debug("Write to symbolic address %s", addr)
             addr_min, addr_max = self.solver.minmax(addr)
             logger.debug("Range: %x <-> %x", addr_min, addr_max)
+            logger.debug("Data: %s", data)
             #Mark and intialize symbolic range
             for i in xrange(addr_min, addr_max+1):
                 if not self.isWriteable(i):
@@ -1055,6 +1056,7 @@ class SMemory(Memory):
                 if not i in self.addr2symbol:
                     self.symbol[i] = self.getchar(i)
                     self.addr2symbol.add(i)
+            
             self.symbol[addr] = chr(data)
         else:
             #concrete addr case
