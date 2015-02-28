@@ -692,9 +692,9 @@ class Cpu(object):
         @param value: the value to put in the stack.
         @param size: the size of the value.
         '''
-        assert size in [ 16, cpu.AddressSize ]
-        cpu.STACK=cpu.STACK-size/8
-        cpu.store(cpu.STACK,value,size)
+        assert size in [ 8, 16, cpu.AddressSize ]
+        cpu.STACK = cpu.STACK-size/8
+        cpu.store(cpu.STACK, value, size)
 
     def pop(cpu, size):
         '''
@@ -706,7 +706,7 @@ class Cpu(object):
         '''
         assert size in [ 16, cpu.AddressSize ]
         value = cpu.load(cpu.STACK, size)
-        cpu.STACK=cpu.STACK+size/8
+        cpu.STACK = cpu.STACK + size/8
         return value
 
     #Execution
@@ -972,7 +972,7 @@ class Cpu(object):
         ''' Decode, and execute one intruction pointed by register PC'''
         assert isinstance(cpu.PC, (int,long))
         instruction = cpu.getInstruction(cpu.PC)
-        cpu.instruction=instruction #FIX
+        cpu.instruction = instruction #FIX
 
         #Check if we already have an implementation...
         if not hasattr(cpu, instruction.mnemonic):
@@ -985,7 +985,7 @@ class Cpu(object):
         for l in cpu.dumpregs().split('\n'):
             logger.debug(l)
 
-        logger.debug("INSTRUCTION: %016x %s",cpu.PC, instruction)
+        logger.debug("INSTRUCTION: %016x %s", cpu.PC, instruction)
         implementation = getattr(cpu, instruction.mnemonic)
         implementation(*instruction.operands)
         #housekeeping
@@ -3097,7 +3097,7 @@ class Cpu(object):
         '''
         #http://stackoverflow.com/questions/11291151/how-push-imm-encodes
         size = src.size
-        if size == 8:
+        if size != 8 and size != cpu.AddressSize/2 :
             size = cpu.AddressSize
         cpu.push(src.read(), size)
 
