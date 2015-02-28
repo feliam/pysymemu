@@ -1,9 +1,11 @@
-/*
-    Minimal toy example with input output using libc
-    Compile with :
-    $ gcc toy002-libc.c -o toy002-libc
-    Analize it with:
-    python system.py -sym stdin example/toy002-libc
+/* Minimal toy example with input output using libc
+ * Symbolic values are read from stdin using standar libc calls. 
+ *    
+ * Compile with :
+ *   $ gcc toy002-libc.c -o toy002-libc
+ *     
+ * Analize it with:
+ *   $ python system.py --sym stdin examples/toy002-libc
 */
 
 #include <stdio.h>

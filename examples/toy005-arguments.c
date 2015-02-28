@@ -1,9 +1,12 @@
-/*
-    Minimal toy example with input output
-    Compile with :
-    $ gcc toy005-arguments.c  -o toy005-arguments
-    Analize it with:
-    python system.py -sym stdin example/toy005-arguments
+/* Minimal toy example with input from argv
+ *
+ * The "special" character '+' marks symbolic bytes on the argyuments to the program.
+ *
+ * Compile with :
+ *   $ gcc toy005-arguments.c  -o toy005-arguments
+ *
+ * Analize it with:
+ *   $ python system.py example/toy005-arguments ++++++++++
 */
 
 #include <stdio.h>

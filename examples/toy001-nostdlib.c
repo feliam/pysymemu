@@ -1,10 +1,13 @@
-/*
-    Minimal toy example with input output no stdlib
-    Compile with :
-    $ gcc -fno-builtin -static -nostdlib -m32  -fomit-frame-pointer  toy001.c  -o toy001
-    Analize it with:
-    python system.py -sym stdin example/toy001-nostdlib
+/* Minimal toy example with some input output no stdlib
+ * Symbolic values are read from stdin using int80 or syscall. The program has 2 posible paths
+ * 
+ * Compile with :
+ *   $ gcc -fno-builtin -static -nostdlib -m32  -fomit-frame-pointer  toy001.c  -o toy001
+ * 
+ * Analize it with:
+ *   $ python system.py --sym stdin examples/toy001-nostdlib
 */
+
 
 /* Linux takes system call arguments in registers:
         syscall number  %eax         call-clobbered

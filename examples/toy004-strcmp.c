@@ -1,9 +1,13 @@
-/*
-    Minimal toy example with input output
-    Copile with :
-    $ gcc toy004-strcmp.c  -o toy004-strcmp
-    Analize it with:
-    python system.py -sym stdin example/toy004-strcmp
+/* Minimal toy example with input output
+ *
+ * This program will read data from stdin and compare it with a constant string
+ * using standard strcmp function.
+ *
+ * Compile with :
+ *   $ gcc toy004-strcmp.c  -o toy004-strcmp
+ *
+ * Analize it with:
+ *   $ python system.py --sym stdin example/toy004-strcmp
 */
 
 #include <stdio.h>

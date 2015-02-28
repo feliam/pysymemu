@@ -1,9 +1,14 @@
-/*
-    Minimal toy example with input output
-    Copile with :
-    $ gcc toy003-sindex.c -o toy003-sindex
-    Analize it with:
-    python system.py -sym stdin example/toy003-sindex
+/* Minimal toy example with input outputA
+ *
+ * This program will use the input from stdin as an index into a 256 bytes long array of bools (bytes)
+ * If input is considered symbolic this will exercise a read on a symbolic input.
+ * Only indexes in the set { 0xfe, 0xfc, 0xfd } may branch to the "Found" part.
+ * 
+ * Compile with :
+ *   $ gcc toy003-sindex.c -o toy003-sindex
+ *
+ * Analize it with:
+ *   $ python system.py --sym stdin example/toy003-sindex
 */
 
 #include <stdio.h>
