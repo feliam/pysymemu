@@ -43,7 +43,7 @@ class MemoryException(Exception):
         @param cause: exception message.
         @param address: memory address where the exception occurred.
         '''
-        super(MemoryException, self, ).__init__("%s <0x%08x>"%(cause, address))
+        super(MemoryException, self, ).__init__("{} {}".format(cause, address))
 
 class MMap(object):
     """
@@ -1041,13 +1041,15 @@ class SMemory(Memory):
         @param addr: the address to put a concrete or symbolic content
         @param data: the content to put in C{addr}
         
-        @todo:  if addr is Readable/Executable? Double checked when accesing parent class!!!
+        @todo: if addr is Readable/Executable? Double checked when accesing parent class!
+        @todo: Instead of concretizing all possible values in range raise exception
+               and make executor for arr on each mapped page
+
         """
         if issymbolic(addr):
             logger.debug("Write to symbolic address %s", addr)
             addr_min, addr_max = self.solver.minmax(addr)
-            logger.debug("Range: %x <-> %x", addr_min, addr_max)
-            logger.debug("Data: %s", data)
+            logger.debug("Range: %x <-> %x Data: %s", addr_min, addr_max, data)
             #Mark and intialize symbolic range
             for i in xrange(addr_min, addr_max+1):
                 if not self.isWriteable(i):
@@ -1086,6 +1088,8 @@ class SMemory(Memory):
             self.solver.add(addr.uge(addr_min))
             self.solver.add(addr.ule(addr_max))
             logger.debug("Range: %x <-> %x", addr_min, addr_max)
+            if addr_max-addr_min > 0x10000000:
+                raise MemoryException("Dangling symbolic pointer[0x%08x-0x%08x]"%(addr_min, addr_max), addr)
             #Symbolic address case
             for i in xrange(addr_min, addr_max+1):
                 if not self.isReadable(i):
