@@ -4,10 +4,10 @@
  * Will use the argv input to select a pointer from a lit and call it.
  *
  * Compile with :
- *   $ gcc toy006-ibranch.c  -o toy005-ibranch
+ *   $ gcc toy006-ibranch.c  -o toy006-ibranch
  *
  * Analize it with:
- *   $ python system.py example/toy005-arguments +
+ *   $ python system.py example/toy006-ibranch +
 */
 
 #include <stdio.h>
