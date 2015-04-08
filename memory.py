@@ -776,7 +776,7 @@ class Memory(object):
         return sorted(result)
 
     def __str__(self):
-        return '\n'.join(["%016x-%016x %s %08x %s"%(start, end, p, offset, filename) for start, end, p, offset, filename in self.mappings()])
+        return '\n'.join(["%016x-%016x % 4s %08x %s"%(start, end, p, offset, filename) for start, end, p, offset, filename in self.mappings()])
 
     def munmap(self, start, size):
         """
@@ -1097,14 +1097,14 @@ class SMemory(Memory):
                 if not i in self.addr2symbol:
                     self.symbol[i] = self.getchar(i)
                     self.addr2symbol.add(i)
-            return self.solver.simplify(self.symbol[addr])
+            return chr(self.solver.simplify(self.symbol[addr]))
 
         if not self.isReadable(addr):
             raise MemoryException("No Access Reading", addr)
 
         #if the pointed value is a symbol...
         if self.isSymbolic(addr):
-            return self.solver.simplify(self.symbol[addr])
+            return chr(self.solver.simplify(self.symbol[addr]))
 
         return super(SMemory, self).getchar(addr)
 
