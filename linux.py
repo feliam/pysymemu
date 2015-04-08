@@ -1,8 +1,11 @@
 import weakref
-import sys, os, struct
+import sys, os, fcntl, struct
+import cpu
+
 from smtlibv2 import chr, ord
 from elftools.elf.elffile import ELFFile
 from contextlib import closing
+
 
 import logging
 logger = logging.getLogger("LINUX")
@@ -11,16 +14,27 @@ class SyscallNotImplemented(Exception):
     ''' Exception raised when you try to call a not implemented
         system call. Go to linux.py and add it!
     '''
-    pass
+    def __init__(self, mode, number):
+        self.mode = mode
+        self.number
+        super(Exception, self).__init__("%s bit system call number %s Not Implemented", mode, number)
+
+class ProcessExit(Exception):
+    def __init__(self, code):
+        super(Exception, self).__init__("Process exited correctly. Code: %s", code)
+
+
+
 
 class File(object):
     def __init__(self, *args, **kwargs):
+        #Todo: assert file is seekable otherwise we should save wwhat was 
+        #read/write to the state
         self.file = file(*args,**kwargs)
     def stat(self):
         return os.fstat(self.fileno())
     def ioctl(self, request, argp):
         #argp ignored..
-        import fcntl
         return fcntl.fcntl(self, request)
     @property
     def name(self):
@@ -52,10 +66,45 @@ class File(object):
         name = state['name']
         mode = state['mode']
         pos = state['pos']
-        self.file = file(name,mode)
+        self.file = file(name, mode)
         self.seek(pos)
 
 class Linux(object):
+    EPERM = 1      # Operation not permitted 
+    ENOENT = 2     # No such file or directory 
+    ESRCH = 3      # No such process 
+    EINTR = 4      # Interrupted system call 
+    EIO = 5        # I/O error 
+    ENXIO = 6      # No such device or address 
+    E2BIG = 7      # Argument list too long 
+    ENOEXEC = 8    # Exec format error 
+    BADF = 9       # Bad file number 
+    ECHILD = 10    # No child processes 
+    EAGAIN = 11    # Try again 
+    ENOMEM = 12    # Out of memory 
+    EACCES = 13    # Permission denied 
+    EFAULT = 14    # Bad address 
+    ENOTBLK = 15   # Block device required 
+    EBUSY = 16     # Device or resource busy 
+    EEXIST = 17    # File exists 
+    EXDEV = 18     # Cross-device link 
+    ENODEV = 19    # No such device 
+    ENOTDIR = 20   # Not a directory 
+    EISDIR = 21    # Is a directory 
+    EINVAL = 22    # Invalid argument 
+    ENFILE = 23    # File table overflow 
+    EMFILE = 24    # Too many open files 
+    ENOTTY = 25    # Not a typewriter 
+    ETXTBSY = 26   # Text file busy
+    EFBIG = 27     # File too large 
+    ENOSPC = 28    # No space left on device 
+    ESPIPE = 29    # Illegal seek 
+    EROFS = 30     # Read-only file system 
+    EMLINK = 31    # Too many links 
+    EPIPE = 32     # Broken pipe 
+    EDOM = 33      # Math argument out of domain of func 
+    ERANGE = 34    # Math result not representable 
+
     '''
     A simple Linux Operating System Model.
     This class emulates the most common Linux system calls
@@ -71,12 +120,15 @@ class Linux(object):
         self.files = [] 
         self.cpu = cpus[0]
         self.mem = mem
-        self.cpu.setOS(self)
         self.base = 0
         self.elf_bss = 0
         self.end_code = 0
         self.end_data = 0
         self.elf_brk = 0
+
+    @property
+    def current(self):
+        return self.cpu
 
     def __getstate__(self):
         state = {}
@@ -103,7 +155,6 @@ class Linux(object):
         self.end_code = state['end_code']
         self.end_data = state['end_data']
         self.elf_brk = state['elf_brk']
-        self.cpu.setOS(self)
 
     def _read_string(self, cpu, buf):
         """
@@ -118,7 +169,34 @@ class Linux(object):
             filename += c
         return filename
 
-    def exe(self, filename, argv=[], envp=[], stdin='stdin', stdout='stdout', stderr='stderr'):
+    def _read_buffer(self, cpu, p, length):
+        data = ''
+        for i in xrange(length):
+            data += chr(cpu.load(p+i,8))
+        return data
+
+    def _write_buffer(self, cpu, p, data):
+        for i in xrange(len(data)):
+            cpu.load(p+i, chr(data[i]), 8)
+
+
+    def _open(self, f):
+        if None in self.files:
+            fd = self.files.index(None)
+            self.files[fd]=f
+        else:
+            fd = len(self.files)
+            self.files.append(f)
+        return fd
+
+    def _close(self, fd):
+        self.files[fd] = None
+
+    def _dup(self, fd):
+        return self._open(self.files[fd])
+
+
+    def exe(self, filename, argv=[], envp=[]):
         '''
         Loads and an ELF program in memory and prepares the initial CPU state. 
         Creates the stack and loads the environment variables and the arguments in it.
@@ -130,8 +208,6 @@ class Linux(object):
             - 'Not matching memory': if the program is compiled for a different address size
         @todo: define va_randomize and read_implies_exec personality 
         '''
-        #Set standar file descriptors
-        self.files = [ File(stdin,'rb'), File(stdout,'wb'), File(stderr,'wb')]
 
         #load elf See binfmt_elf.c
         #read the ELF object file
@@ -537,16 +613,7 @@ class Linux(object):
         @todo: flags and mode not used
         '''
         filename = self._read_string(cpu, buf)
-
-        f = File(filename)
-
-        if None in self.files:
-            fd = self.files.index(None)
-            self.files[fd]=f
-        else:
-            self.files.append(f)
-            fd = len(self.files)-1
-        return fd
+        return self._open(File(filename))
 
     def sys_read(self, cpu, fd, buf, count):
         '''
@@ -789,7 +856,7 @@ class Linux(object):
         @param error_code: not used.
         @raise Exception: 'Finished'
         '''
-        raise Exception('Finished')
+        raise ProcessExit(error_code)
 
     def sys_access(self, cpu, buf, mode):
         '''
@@ -986,7 +1053,7 @@ class Linux(object):
         return self.files[fd].ioctl(request, argp)
 
     #from http://www.scs.stanford.edu/histar/src/pkg/uclibc/libc/inet/socketcalls.c
-    def sys_socketcall(self, cpu, call, args):
+    def sys_socketcall(self, cpu, call_num, args):
         '''
         socketcall() is a common kernel entry point for the socket system calls.
         @rtype: int
@@ -996,7 +1063,7 @@ class Linux(object):
         @param args: points to a block containing the actual arguments, which are
         passed through to the appropriate call.
         '''
-        print "SOCKETCALL %d"%call
+        logger.debug("SOCKETCALL %d", call_num)
         socketcalls = { 1: self.sys_socket,
                         2: self.sys_bind,
                         3: self.sys_connect,
@@ -1016,12 +1083,10 @@ class Linux(object):
                         17: self.sys_recvmsg,
                        }
         args = [ cpu, cpu.load(args,32), cpu.load(args+4,32), cpu.load(args+8,32), cpu.load(args+12,32), cpu.load(args+16,32), cpu.load(args+20,32), cpu.load(args+24,32) ]
-        func = socketcalls[call]
+        if call not in socketcalls:
+            raise SocketcallNotImplemented(32, call_num, "Socketcall num %d not implemented!"% call_num)
+        func = socketcalls[call_num]
         return func(*args[:func.func_code.co_argcount-1])
-
-    def sys_socket(self, cpu, family, ty, protocol):
-        logger.debug("SOCKET not implemented! family: %d, type: %d, protocol: %d", family, ty, protocol)
-        return 0
 
     def sys_fcntl64(self, cpu, fd, cmd):
         logger.debug("FCNTL64 not implemented! fd: %d  cmd: %d", fd, cmd)
@@ -1078,9 +1143,27 @@ class Linux(object):
                  0x0000000000000014: self.sys_writev,
                  0x0000000000000004: self.sys_stat64,
                  0x0000000000000059: self.sys_acct,
+                 0x0000000000000029: self.sys_socket,
+                 0x000000000000002a: self.sys_connect,
+                 0x000000000000002b: self.sys_accept,
+#                 0x000000000000002c: self.sys_sendto,
+#                 0x000000000000002d: self.sys_recvfrom,
+#                 0x000000000000002e: self.sys_sendmsg,
+#                 0x000000000000002f: self.sys_recvmsg,
+                 0x0000000000000030: self.sys_shutdown,
+                 0x0000000000000031: self.sys_bind,
+                 0x0000000000000032: self.sys_listen,
+                 0x0000000000000033: self.sys_getsockname,
+                 0x0000000000000034: self.sys_getpeername,
+#                 0x0000000000000035: self.sys_socketpair,
+#                 0x0000000000000036: self.sys_setsockopt,
+#                 0x0000000000000037: self.sys_getsockopt,
+
+
+
                 }
         if cpu.RAX not in syscalls.keys():
-            raise SyscallNotImplemented("64 bit system call number %s Not Implemented" % cpu.RAX)
+            raise SyscallNotImplemented("64 bit system call number %s Not Implemented", cpu.RAX)
 
         func = syscalls[cpu.RAX]
         logger.debug("SYSCALL64: %s (nargs: %d)", func.func_name, func.func_code.co_argcount)
@@ -1135,13 +1218,286 @@ class Linux(object):
     def execute(self):
         """
         Execute one cpu instruction in the current thread (only one suported).
+        Intruction may result in a syscall.
+
         @rtype: bool
         @return: C{True}
         
         @todo: This is where we could implement a simple schedule.
         """
-        self.cpu.execute()
+        try:
+            self.current.execute()
+
+        except cpu.Interruption, e:
+            if e.N != 0x80:
+                raise 
+            self.int80(self.current)
+
+        except cpu.Syscall, e:
+            self.syscall(self.current)
+
+
+
         return True
+
+    def sys_socket(self, cpu, family, ty, protocol):
+        logger.debug("SOCKET not implemented! family: %d, type: %d, protocol: %d", family, ty, protocol)
+        return self._open(Socket(family, ty, protocol))
+
+    def sys_getsockname(self, cpu, fd, addr_p, addrlen_p):
+        ''' getsockname()  returns the current address to which the socket sockfd is bound, in the buffer
+       pointed to by addr.  The addrlen argument should be initialized to  indicate  the  amount  of
+       space  (in  bytes)  pointed  to by addr.  On return it contains the actual size of the socket
+       address.
+        '''
+        if fd not in self.files:
+            return -Linux.EBADF
+        sock = self.files[fd]
+        if not isinstance(sock, Socket):
+            return -Linux.ENOTSOCK
+
+        addrlen = cpu.load_int(addrlen_p)
+        if addrlen < 0:
+            return -Linux.EINVAL
+        name = sock.getsockname()
+        cpu.write(addr_p, name[:addrlen])
+        cpu.write_int(addrlen_p, len(name))
+        return 0
+
+    def sys_getpeername(self, cpu, fd, addr_p, addrlen_p):
+        if fd not in self.files:
+            return -Linux.EBADF
+        sock = self.files[fd]
+
+        if not isinstance(sock, Socket):
+            return -Linux.ENOTSOCK
+
+        addrlen = cpu.load_int(addrlen_p)
+
+        if addrlen < 0:
+            return -Linux.EINVAL
+        name = sock.getpeername()
+
+        if name is None:
+            return -Linux.ENOTCONN
+
+        cpu.write(addr_p, name[:addrlen])
+        cpu.write_int(addrlen_p, len(name))
+
+        return 0
+
+    def sys_bind(self, cpu, fd, addr_p, addrlen_p):
+        if fd not in self.files:
+            return -Linux.EBADF
+        sock = self.files[fd]
+
+        if not isinstance(sock, Socket):
+            return -Linux.ENOTSOCK
+
+        addrlen = cpu.load_int(addrlen_p)
+
+        if addrlen < 0:
+            return -Linux.EINVAL
+
+        address = cpu.read(addr_p, addrlen)
+        sock.bin(address)
+
+        return 0
+
+
+    def sys_connect(self, cpu, fd, addr_p, addrlen_p):
+        if fd not in self.files:
+            return -Linux.EBADF
+        sock = self.files[fd]
+
+        if not isinstance(sock, Socket):
+            return -Linux.ENOTSOCK
+
+        addrlen = cpu.load_int(addrlen_p)
+
+        if addrlen < 0:
+            return -Linux.EINVAL
+
+        address = cpu.read(addr_p, addrlen)
+        return sock.connect(address)
+
+    def sys_listen(self, cpu, backlog):
+        if fd not in self.files:
+            return -Linux.EBADF
+        sock = self.files[fd]
+
+        if not isinstance(sock, Socket):
+            return -Linux.ENOTSOCK
+
+        return sock.listen(backlog)
+
+    def sys_accept(self, cpu, addr_p, addrlen_p, flags):
+        if fd not in self.files:
+            return -Linux.EBADF
+        sock = self.files[fd]
+
+        if not isinstance(sock, Socket):
+            return -Linux.ENOTSOCK
+
+        addrlen = cpu.load_int(addrlen_p)
+
+        if addrlen < 0:
+            return -Linux.EINVAL
+
+        address = cpu.read(addr_p, addrlen)
+        return sock.accept(address, flags)
+
+
+    def sys_send(self, cpu, fd, buf_p, size, flags):
+        if fd not in self.files:
+            return -Linux.EBADF
+        sock = self.files[fd]
+
+        if not isinstance(sock, Socket):
+            return -Linux.ENOTSOCK
+
+        buf = cpu.read(buf_p, size)
+        return sock.send(buf, flags)
+
+    def sys_recv(self, cpu, fd, buf_p, size, flags):
+        if fd not in self.files:
+            return -Linux.EBADF
+        sock = self.files[fd]
+
+        if not isinstance(sock, Socket):
+            return -Linux.ENOTSOCK
+
+        buf = sock.recv(size, flags)
+        cpu.write(buf_p, buf)
+
+        return len(buf)
+
+    def sys_shutdown(sellf, cpu, fd, how):
+        if fd not in self.files:
+            return -Linux.EBADF
+        sock = self.files[fd]
+
+        if not isinstance(sock, Socket):
+            return -Linux.ENOTSOCK
+        return sock.shutdown(how)
+
+class PipeRD(object):
+    def __init__(self, data):
+        self.data = data
+        self.pos = 0
+    def read(self, size):
+        buf = self.data[self.pos:self.pos+size]
+        self.pos+=len(buf)
+        return buf
+
+class PipeWR(object):
+    def __init__(self):
+        self.data = []
+    def write(self, buf):
+        for val in buf:
+            self.data.append(val)
+
+import socket
+socket_domain = {}
+class Socket(object):
+    def __init__(self, family, ty, protocol, rx=''):
+        assert family in [ socket.AF_UNIX, socket.AF_INET, socket.AF_INET]
+        assert ty in [socket.SOCK_STREAM, socket.SOCK_DGRAM] #Normally used
+        self.family
+        self.type = ty
+        self.protocol = protocol
+        self.address = None
+        self.backlog = None
+        self.peer = None
+        self.shutdown = None
+
+        self.rx = PipeRD(rx)
+        self.tx = PipeWR()
+        self.state = 'OPEN'
+
+    def bind(self, addr):
+        '''assigning  a name to a socket'''
+        if self.state != 'OPEN':
+            return -Linux.EINVAL
+        self.address = addr
+        self.state = 'BIND'
+        return 0
+
+    def listen(self, backlog):
+        if self.state != 'BIND':
+            return -Linux.EINVAL
+        self.backlog = backlog
+        self.state = 'LISTEN'
+        return 0
+
+    def accept(self):
+        if self.state != LISTEN:
+            return -Linux.EINVAL
+        self.state = 'ACCEPT'
+        return 0
+
+    def connect(self, addr):
+        if self.state != 'OPEN':
+            return -Linux.EINVAL
+        self.peer = addr
+        self.state = 'CONNECT'
+        return 0
+
+    def getsockname(self):
+        family  = { socket.AF_UNIX: 'AF_UNIX', socket.AF_INET:'AF_INET', socket.AF_INET:'AF_INET'}[self.family]
+        ty = {Socket.SOCK_STREAM:'SOCK_STREAM', socket.SOCK_DGRAM:'SOCK_DGRAM'}[self.tpe]
+        return 'socket_%s_%s_%s_%s'%(family, ty, protocol, self.state)
+
+    def getpeername(self):
+        return self.peer
+
+    def send(self, message, flags=0):
+        if self.state not in [ 'ACCEPT', 'CONNECT' ]:
+            return -Linux.EINVAL
+        self.tx.write(message)
+
+    def recv(self, bufsize, flags=0):
+        if self.state not in [ 'ACCEPT', 'CONNECT' ]:
+            return -Linux.EINVAL
+        return self.rx.read(bufsize)
+
+    def sendto(self, message, address, flags=0):
+        return -Linux.EINVAL
+
+    def recvfrom(self, bufsize, flags=0):
+        '''The return value is a pair (string, address)'''
+        return -Linux.EINVAL
+
+    def shutdown(self, how=2):
+        if self.state not in [ 'ACCEPT', 'CONNECT' ]:
+            return -Linux.EINVAL
+        self.shutdown = how
+        self.state = 'SHUTDOWN'
+
+    def getsockopt(self, level, optname):
+        return -Linux.EINVAL
+
+    def getsockopt(self, level, optname, value):
+        return -Linux.EINVAL
+
+    def __getstate__(self):
+        state = {}
+        state['family'] = self.family
+        state['type'] = self.type
+        state['protocol'] = self.protocol
+
+        state['state'] = self.state
+        state['tx_pos'] = self.tx_pos
+        state['tx'] = self.tx
+        state['rx_pos'] = self.rx_pos
+        state['rx'] = self.rx
+
+        return state
+
+    def __setstate__(self, state):
+        self.pos = state['pos']
+        self.max_size = state['max_size']
+        self.array = state['array']
 
 
 class SymbolicFile(object):
@@ -1246,6 +1602,7 @@ class SymbolicFile(object):
                 self.array[i] = data[i-self.pos]
 
 
+
 class SLinux(Linux):
     '''
     A symbolic extension of a Linux Operating System Model.
@@ -1278,11 +1635,8 @@ class SLinux(Linux):
         self.symbolic_files = state['symbolic_files']
         super(SLinux, self).__setstate__(state)
 
-    def exe(self, filename, argv=[], envp=[], stdin='stdin', stdout='stdout', stderr='stderr'):
-        super(SLinux,self).exe(filename, argv, envp, stdin='stdin', stdout='stdout', stderr='stderr')
-        if stdin in self.symbolic_files:
-            #Replace stdin with symbolic file
-            self.files[0] = SymbolicFile(self.solver, self.files[0],'rb')
+    def exe(self, filename, argv=[], envp=[]):
+        super(SLinux,self).exe(filename, argv, envp)
 
 
     def sys_open(self, cpu, buf, flags, mode):
@@ -1302,13 +1656,7 @@ class SLinux(Linux):
             assert flags&7 == os.O_RDWR or flags&7 == os.O_RDONLY, "Symbolic files should be readable?"
             f = SymbolicFile(self.solver, f, 'r')
 
-        if None in self.files:
-            fd = self.files.index(None)
-            self.files[fd]=f
-        else:
-            self.files.append(f)
-            fd = len(self.files)-1
-        return fd
+        return self._open(f)
 
     def sys_exit_group(self, cpu, error_code):
         return super(SLinux, self).sys_exit_group(cpu, error_code)
