@@ -114,6 +114,10 @@ class BitVec(Symbol):
         super(BitVec,self).__init__(value, *children, **kwargs)
         assert size in [1,8,16,32,64,128,256]
         self.size=size
+    def __repr__(self):
+        if self.size == 1:
+            return '.'
+        return (self.size/8)*'?'
 
     def __getstate__(self):
         state = super(BitVec, self).__getstate__()
