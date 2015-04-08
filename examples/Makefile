@@ -16,6 +16,6 @@ toy004-strcmp:
 		gcc toy004-strcmp.c -o toy004-strcmp
 
 toy005-arguments:
-		gcc toy005-arguments.c  -o toy005-arguments
+		gcc -O0 -m32 toy005-arguments.c  -o toy005-arguments
 
 
