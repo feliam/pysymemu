@@ -38,307 +38,316 @@ import argparse
 
 from cpu import Cpu
 from memory import SMemory, MemoryException
-from linux import SLinux
+from linux import SLinux, SymbolicFile, File, ProcessExit
 from smtlibv2 import issymbolic, Symbol, Solver, BitVec, Array, Bool, chr
 
-# logging
-logging.basicConfig( filename = "system.log",
-#                     filename = "/dev/stdout",
-                    format = "%(asctime)s: %(name)s:%(levelname)s: %(message)s",
-#                    level = logging.INFO)
-                    level = logging.DEBUG)
-logger = logging.getLogger("SYSTEM")
 
-# parse arguments
-parser = argparse.ArgumentParser(description='Symbolically analize a program')
+class State(object):
 
+    @property
+    def solver(self):
+        return self.os.solver
+    @property
+    def cpu(self):
+        return self.os.cpu
 
-parser.add_argument('--worspace', type=str, nargs=1, default='pse_',
-                   help='A folder name fpor temporaries and results. (default pse_?????)')
+    def execute(self):
+        self.trace.append(self.os.cpu.PC)
+        return self.os.execute()
 
-parser.add_argument('--sym', type=str, action='append', default=[],
-                   help='Consider a filename as symbolic')
-parser.add_argument('--stdin', type=str, nargs=1, default='stdin',
-                   help='A filename to pass as standar stdin (default: stdin)')
-parser.add_argument('--stdout', type=str, nargs=1, default='stdout',
-                   help='A filename to pass as standar stdout (default: stdout)')
-parser.add_argument('--stderr', type=str, nargs=1, default='stderr',
-                   help='A filename to pass as standar stderr (default: stderr)')
-parser.add_argument('--env', type=str,  action='append', default =[],
-                   help='A environment variable to pass to the program (ex. VAR=VALUE)')
-
-parser.add_argument('program', type=str, metavar='PROGRAM',
-                   help='Program to analize' )
-parser.add_argument('argv', type=str, nargs='...', metavar='...',
-                   help='Program arguments. Need a -- separator. Ex: -- -y 2453' )
-
-raw_args = sys.argv[1:]
-prg_args = []
-if '--' in raw_args:
-    prg_args = raw_args[raw_args.index('--')+1:]
-    raw_args = raw_args[:raw_args.index('--')]
-
-
-args = parser.parse_args(raw_args)
-args.argv += prg_args
-print "[+] Running", args.program
-print "\twith arguments:", args.argv
-print "\twith environment:", args.env
-
-# guess architecture from file
-from elftools.elf.elffile import ELFFile
-arch = {'x86':'i386','x64':'amd64'}[ELFFile(file(args.program)).get_machine_arch()]
-bits = {'i386':32, 'amd64':64}[arch]
-print "[+] Detected arch:", arch
-
-#Make working directory
-folder = tempfile.mkdtemp(prefix=args.worspace, dir='./')
-
-# Make initial state
-solver = Solver()
-mem = SMemory(solver, bits,12)
-linux = SLinux(solver, [Cpu(mem, arch)], mem, symbolic_files=args.sym)
-
-print "Symbolic files: ", args.sym
-del solver
-del mem
-
-WILDCARD = '+'
-input_symbols = []
-argv = [ args.program ] # argv[0] not symbolic #fix?
-for i in range(len(args.argv)):
-    if WILDCARD in args.argv[i]:
-        print "Argument %d has symbols"%i
-        name = "ARG%d"%i
-        size = len(args.argv[i])
-        sarg = linux.solver.mkArray(name=name, is_input=True, max_size=size)
-        for j in range(size):
-            if args.argv[i][j] != WILDCARD:
-                sarg[j] = args.argv[i][j]
-        input_symbols.append((name, size))
-        argv.append([sarg[j] for j in range(size)])
-    else:
-        argv.append(args.argv[i])
-
-
-env = [ '%s=%s' % (key, val) for (key,val) in os.environ.items() ]
-for i in range(len(args.env)):
-    if WILDCARD in args.env[i]:
-        print "Environment variable %d has symbols"%i
-        name = "ENV%d"%i
-        size = len(args.env[i])
-        senv = linux.solver.mkArray(name=name, is_input=True, max_size=size)
-        for j in range(size):
-            if args.env[i][j] != WILDCARD:
-                senv[j] = args.env[i][j]
-        input_symbols.append((name, size))
-        env.append([chr(senv[j]) for j in range(size)])
-
-#pass stdin, stdout, stderr as kw arguments to exe
-linux.exe(args.program, argv, env, stdin=args.stdin, stdout=args.stdout, stderr=args.stderr)
-del env
-del argv
-
-with file(folder+os.sep+'dump_init.pkl','w+') as f:
-    pickle.dump(linux,f ,2)
-
-time_start = time.clock()
-count = 0
-test_case_no = 0
-states = ['dump_init.pkl']
-
-def get_state():
-    nnstates = {}
-    for nn in states:
-        nnstates.setdefault(nn.split("_")[1], set()).add(nn)
-    nncounts = [ (x, len(nnstates[x])) for x in nnstates.keys()]
-    #print '\n'.join(map(str, nncounts))
-    nncount_min = min(nncounts, key=lambda(a,b): b)
-    l = [x for x in states if nncount_min[0] in x]
-    random.shuffle(l)
-    st = l.pop()
-    states.remove(st)
-    return st
-
-def generate_testcase(linux):
-    global test_case_no
-    test_case_no += 1
-    solver = linux.solver
-    assert solver.check() == 'sat'
-    for symbol,size in solver.input_symbols:
-        if isinstance(symbol, Array):
-            buf = ''
-            for i in range(size):
-                buf += chr(solver.getvalue(symbol[i]))
-            print "%s: "%symbol.name, repr(buf)
+    def makeSymbolic(self, data, name = '', WILDCARD='+'):
+        if WILDCARD in data:
+            size = len(data)
+            symb = self.solver.mkArray(name=name, is_input=True, max_size=size)
+            for j in xrange(size):
+                if data[j] != WILDCARD:
+                    symb[j] = data[j]
+            return [chr(symb[i]) for i in range(size)]
         else:
-            print symbol, type(symbol)
-            raise NotImplemented
-        file(folder+os.sep+'test_%d.txt'%test_case_no,'a').write("%s: %s\n"%(symbol.name, repr(buf)))
-print "Starting..."
-try:
-    while len(states) !=0:
-        #select a suitable state to analize
-        current_state = get_state()
-        try:
-            #load the state
-            linux = pickle.load(file(folder+os.sep+current_state,'r'))
-            #execute until exception or finnish
-            while linux.execute():
-                linux.cpu.PC = linux.solver.simplify(linux.cpu.PC)
+            return data
 
-                #if PC gets "tainted" with symbols do stuff
-                if issymbolic(linux.cpu.PC):
-                    #get all possible PC destinations (raise if more tahn 100 options)
-                    vals = list(linux.solver.getallvalues(linux.cpu.PC, maxcnt = 100))
-                    print "Symbolic PC found, possible detinations are: ", ["%x"%x for x in vals]
-                    #import pdb
-                    #pdb.set_trace()
-                    
+    def __init__(self, program, arguments, environment={}, symbolic=[]):
+        # guess architecture from file
+        from elftools.elf.elffile import ELFFile
+        arch = {'x86':'i386','x64':'amd64'}[ELFFile(file(args.program)).get_machine_arch()]
+        bits = {'i386':32, 'amd64':64}[arch]
+        self.trace = []
+        logger.info("Loading %s ELF program %s", arch, program)
+        logger.info("Arguments: %s", arguments)
+        logger.info("Environment: %s", environment)
 
-                    #Shuffle the possibilities, 
-                    random.shuffle(vals)
-                    #we will keep one state for the current analisys and save 
-                    #all the rest to files
-                    current_pc = linux.cpu.PC
-                    for new_pc in vals[1:]:
-                        name = 'dump_%016x_%d.pkl'%(new_pc, linux.cpu.icount)
-                        print "\tSaving state %s PC: 0x%x"%(name, new_pc)
-                        linux.solver.push()
-                        #add the constraint
-                        linux.solver.add(current_pc == new_pc)
-                        #and set the PC to the concretye destination
-                        linux.cpu.PC = new_pc
-                        with file(folder+os.sep+name,'w+') as f:
-                            pickle.dump(linux, f, 2)
-                        linux.solver.pop()
-                        #add the state to the list of pending states
-                        states.append(name)
+        solver = Solver()
+        mem = SMemory(solver, bits, 12)
+        cpu0 = Cpu(mem, arch)
+        os = SLinux(solver, [cpu0], mem)
 
-                    #keep analizing one of the states already loaded up
-                    new_pc = vals[0]
-
-                    name = 'dump_%016x_%d.pkl'%(new_pc, linux.cpu.icount)
-                    linux.solver.add(current_pc == new_pc)
-                    linux.cpu.PC = new_pc
-
-                    #Try to do some symplifications to shrink symbolic footprint
-                    try :
-                        bvals = []
-                        linux.solver.push()
-                        linux.solver.add(linux.cpu.IF == True)
-                        if linux.solver.check()=='sat':
-                            bvals.append(True)
-                        linux.solver.pop()
-                        linux.solver.push()
-                        linux.solver.add(linux.cpu.IF == False)
-                        if linux.solver.check()=='sat':
-                            bvals.append(False)
-                        linux.solver.pop()
-                        if len(bvals) == 1:
-                            linux.cpu.IF = bvals[0]
-                    except Exception,e:
-                        print "EEXXXXX",e,linux.cpu.IF
-                        pass
-                    linux.cpu.IF = linux.solver.simplify(linux.cpu.IF)
-                    linux.cpu.RAX = linux.solver.simplify(linux.cpu.RAX)
-                    linux.cpu.RCX = linux.solver.simplify(linux.cpu.RCX)
-                    linux.cpu.RSI = linux.solver.simplify(linux.cpu.RSI)
-                    linux.cpu.RDI = linux.solver.simplify(linux.cpu.RDI)
-                    #save a checkpoint of the current state
-                    pickle.dump(linux,file(folder+os.sep+name,'w+'),2)
+        self.os=os
 
 
+        environment = [ '%s=%s' % (key, val) for (key,val) in environment.items() ]
+        arguments = [program] + [ self.makeSymbolic(arguments[i], 'ARGV%02d'%i) for i in xrange(0, len(arguments)) ]
+        environment = [ self.makeSymbolic(environment[i], 'ENV%02d'%i) for i in xrange(0, len(environment)) ]
 
-                    '''
-                    if len(vals)>1:
-                        name = 'dump_%016x_%d.pkl'%(new_pc, linux.cpu.icount)
-                        print "Continuing through pc: 0x%x"%new_pc
-                        print "\tsmt size %d"%len(str(linux.solver))
-                        print "Generating failsafe dump ... ", name
-                        print current_pc == new_pc
-                        cons = linux.solver.simplify(current_pc == new_pc)
-                        if str(cons).startswith('(= '):
-                            print "TRYING REPLACING EQ", cons
-                            #for ex. (= (select arg #x00000000) #x2d)
-                            left = ' '.join(str(cons)[3:-1].split(' ')[:-1])
-                            right = str(cons)[3:-1].split(' ')[-1]
-                            if right.startswith("#x"):
-                                right = int(right[2:],16)
-                                for addr, (val,size) in linux.cpu.mem_cache.items():
-                                    if str(val) == left:
-                                        print "MOD!!", addr, right, val, size
-                                        linux.cpu.mem_cache[addr] = (right,size)
+        #pass arguments to exe
+        os.exe(program, arguments, environment)
 
-                        linux.solver.add(current_pc == new_pc)
-                        linux.cpu.IF = linux.solver.simplify(linux.cpu.IF)
-                        pickle.dump(linux,file(name,'w+'),2)
+        #FIXME: Find a way to set symbolic files from command line
+        # open standard files stdin, stdout, stderr
+        assert os._open(SymbolicFile(solver, 'stdin','rb')) == 0
+        assert os._open(File('stdout','wb')) == 1
+        assert os._open(File('stderr','wb')) == 2
 
-                    else:
+        self.trace = []
+
+    def branch(self):
+        return copy.deepcopy(self)
+        #return pickle.loads(pickle.dumps(state,  2))
+
+    @property
+    def name(self):
+        return 'state_%016x_%d.pkl'%(self.cpu.PC, self.cpu.icount)
+
+class Executor(object):
+    def __init__(self, workspace=None, **options):
+        #Make working directory
+        self.workspace = tempfile.mkdtemp(prefix=workspace, dir='./')
+        self.states = []
+        self.test_number = 0
+
+    def _getFilename(self, filename):
+        return os.path.join(self.workspace, filename)
+
+    def delState(self, state):
+        if state in self.states:
+            self.states.remove(state)
+
+    def putState(self, state, policy='RANDOM'):
+        name = state.name
+        print "\tSaving state %s"%name
+        with file(self._getFilename(name),'w+') as f:
+            pickle.dump(state, f, 2)
+
+        #TODO pickle dump on file
+        self.states.append(state.name)
+
+    def getState(self, policy='RANDOM'):
+        #TODO pickle load from file
+        if not self.states:
+            return None
+        nnstates = {}
+        for nn in self.states:
+            nnstates.setdefault(nn.split("_")[1], set()).add(nn)
+        nncounts = [ (x, len(nnstates[x])) for x in nnstates.keys()]
+        #print '\n'.join(map(str, nncounts))
+        nncount_min = min(nncounts, key=lambda(a,b): b)
+        l = [x for x in self.states if nncount_min[0] in x]
+        random.shuffle(l)
+        st = l.pop()
+        self.states.remove(st)
+        print "\t Loading state ",  st
+        with file(self._getFilename(st),'rb') as f:
+            st = pickle.load(f)
+        return st
+
+    def generate_testcase(self, linux):
+        self.test_number+= 1
+        solver = linux.solver
+        assert solver.check() == 'sat'
+        for symbol,size in solver.input_symbols:
+            if isinstance(symbol, Array):
+                buf = ''
+                for i in range(size):
+                    buf += chr(solver.getvalue(symbol[i]))
+                print "%s: "%symbol.name, repr(buf)
+            else:
+                print symbol, type(symbol)
+                raise NotImplemented
+            file(self._getFilename('test_%d.txt'%self.test_number),'a').write("%s: %s\n"%(symbol.name, repr(buf)))
+
+
+
+
+
+
+
+
+def parse_arguments():
+    ################################################################################
+    # parse arguments
+    parser = argparse.ArgumentParser(description='Symbolically analize a program')
+    parser.add_argument('--workspace', type=str, nargs=1, default='pse_',
+                       help='A folder name fpor temporaries and results. (default pse_?????)')
+    parser.add_argument('--log', type=str, nargs=1, default=['/dev/stdout'],
+                       help='The log filename')
+    parser.add_argument('--verbose', action="store_true", help='Enable debug mode.')
+    parser.add_argument('--sym', type=str, action='append', default=[],
+                       help='Consider a filename as symbolic')
+    parser.add_argument('--stdin', type=str, nargs=1, default='stdin',
+                       help='A filename to pass as standar stdin (default: stdin)')
+    parser.add_argument('--stdout', type=str, nargs=1, default='stdout',
+                       help='A filename to pass as standar stdout (default: stdout)')
+    parser.add_argument('--stderr', type=str, nargs=1, default='stderr',
+                       help='A filename to pass as standar stderr (default: stderr)')
+    parser.add_argument('--env', type=str,  action='append', default =[],
+                       help='A environment variable to pass to the program (ex. VAR=VALUE)')
+    parser.add_argument('program', type=str, metavar='PROGRAM',
+                       help='Program to analize' )
+    parser.add_argument('argv', type=str, nargs='...', metavar='...',
+                       help='Program arguments. Need a -- separator. Ex: -- -y 2453' )
+    raw_args = sys.argv[1:]
+    prg_args = []
+
+    if '--' in raw_args:
+        prg_args = raw_args[raw_args.index('--')+1:]
+        raw_args = raw_args[:raw_args.index('--')]
+
+    args = parser.parse_args(raw_args)
+    args.argv += prg_args
+
+    return args
+
+
+from a import aaa
+
+if __name__ == '__main__':
+    args = parse_arguments()
+    ################################################################################
+    # logging
+    logging.basicConfig(filename = args.log[0],
+                        format = "%(asctime)s: %(name)s:%(levelname)s: %(message)s",
+                        level = {False:logging.INFO, True:logging.DEBUG}[args.verbose])
+
+    verbosity = {False:logging.INFO, True:logging.DEBUG}[args.verbose]
+    logging.getLogger("EXECUTOR").setLevel(verbosity)
+    logging.getLogger("CPU").setLevel(verbosity)
+    logging.getLogger("SOLVER").setLevel(verbosity)
+    logging.getLogger("MEM").setLevel(verbosity)
+
+    logger = logging.getLogger("EXECUTOR")
+
+    print "[+] Running", args.program
+    print "\twith arguments:", args.argv
+    print "\twith environment:", args.env
+
+    env = os.environ
+    env.update([ e.split('=') for e in args.env])
+
+    state = State(args.program, args.argv, env )
+
+    time_start = time.clock()
+    count = 0
+    test_case_no = 0
+
+    executor = Executor(workspace=args.workspace)
+    executor.putState(state)
+
+    print "Starting..."
+    try:
+        while len(executor.states) != 0:
+            #select a suitable state to analize
+            current_state = executor.getState()
+            try:
+                #execute until exception or finnish
+                while current_state.execute():
+                    #assert aaa[len(current_state.trace)-1] == current_state.trace[-1]
+                    #if PC gets "tainted" with symbols do stuff
+                    if issymbolic(current_state.cpu.PC):
+                        #get all possible PC destinations (raise if more tahn 100 options)
+                        vals = list(current_state.solver.getallvalues(current_state.cpu.PC, maxcnt = 100))
+                        print "Symbolic PC found, possible detinations are: ", ["%x"%x for x in vals]
+
+                        #Shuffle the possibilities, 
+                        random.shuffle(vals)
+                        #we will keep one state for the current analisys and save 
+                        #all the rest to files
+                        current_pc = current_state.cpu.PC
+                        for new_pc in vals[1:]:
+                            new_state = current_state.branch()
+                            #add the constraint
+                            new_state.solver.add(new_state.cpu.PC == new_pc)
+                            #and set the PC of the new state to the concrete pc-dest
+                            new_state.cpu.PC = new_pc
+                            #add the state to the list of pending states
+                            executor.putState(new_state)
+
+                        #keep analizing one of the states already loaded up
+                        new_pc = vals[0]
+
+                        current_state.solver.add(current_pc == new_pc)
+                        current_state.cpu.PC = new_pc
+
+                        #Try to do some symplifications to shrink symbolic footprint
                         try :
                             bvals = []
-                            linux.solver.push()
-                            linux.solver.add(linux.cpu.IF == True)
-                            if linux.solver.check()=='sat':
+                            current_state.solver.push()
+                            current_state.solver.add(current_state.cpu.IF == True)
+                            if current_state.solver.check()=='sat':
                                 bvals.append(True)
-                            linux.solver.pop()
-                            linux.solver.push()
-                            linux.solver.add(linux.cpu.IF == False)
-                            if linux.solver.check()=='sat':
+                            current_state.solver.pop()
+                            current_state.solver.push()
+                            current_state.solver.add(current_state.cpu.IF == False)
+                            if current_state.solver.check()=='sat':
                                 bvals.append(False)
-                            linux.solver.pop()
+                            current_state.solver.pop()
                             if len(bvals) == 1:
-                                linux.cpu.IF = bvals[0]
+                                current_state.cpu.IF = bvals[0]
                         except Exception,e:
-                            print "EEXXXXX",e,linux.cpu.IF
+                            print "EEXXXXX",e,current_state.cpu.IF
                             pass
-                        linux.cpu.IF = linux.solver.simplify(linux.cpu.IF)
-                        linux.cpu.RCX = linux.solver.simplify(linux.cpu.RCX)
-                    '''
-                    new_pc=None
-                    vals = None
+                        current_state.cpu.IF = current_state.solver.simplify(current_state.cpu.IF)
+                        current_state.cpu.RAX = current_state.solver.simplify(current_state.cpu.RAX)
+                        current_state.cpu.RCX = current_state.solver.simplify(current_state.cpu.RCX)
+                        current_state.cpu.RSI = current_state.solver.simplify(current_state.cpu.RSI)
+                        current_state.cpu.RDI = current_state.solver.simplify(current_state.cpu.RDI)
+                        #save a checkpoint of the current state
+                        #pickle.dump(linux,file(folder+os.sep+name,'w+'),2)
 
-#                print "="*80
-#                print "INSTRUCTION: %016x %s"% (linux.cpu.PC, linux.cpu.instruction)
-#                print linux.cpu.dumpregs()
-                count += 1
-        except Exception,e:
-            test_case_no+=1
-            if e.message == 'Finished':
+
+                        new_pc=None
+                        vals = None
+
+                    count += 1
+
+
+            except ProcessExit, e:
+                test_case_no+=1
                 print "Program Finnished correctly"
-                generate_testcase(linux)
-            elif e.message == "Max number of different solutions hit":
-                print "Max number of target PCs hit. Checking for wild PC."
-                solver = linux.solver
-                solver.push()
-                try:
-                    #Quick heuristics to determine wild pc
+                executor.generate_testcase(current_state)
+            except Exception,e:
+                test_case_no+=1
+                if e.message == "Max number of different solutions hit":
+                    print "Max number of target PCs hit. Checking for wild PC."
+                    solver = current_state.solver
                     solver.push()
-                    solver.add(linux.cpu.PC == 0x41414141)
-                    if solver.check() == 'sat':
-                        print "PC seems controled!"
-                    solver.pop()
-                    m,M = solver.minmax(linux.cpu.PC)
-                    print "Program counter range: %016x - %016x" %(m,M)
-                    generate_testcase(linux)
-                finally:
-                    solver.pop()
-            else:
-                print Exception, e
-                generate_testcase(linux)
-                print '-'*60
-                traceback.print_exc(file=sys.stdout)
-                print '-'*60
-                import pdb
-                pdb.set_trace()
+                    try:
+                        #Quick heuristics to determine wild pc
+                        solver.push()
+                        solver.add(current_state.cpu.PC == 0x41414141)
+                        if solver.check() == 'sat':
+                            print "PC seems controled!"
+                        solver.pop()
+                        m,M = solver.minmax(linux.cpu.PC)
+                        print "Program counter range: %016x - %016x" %(m,M)
+                        executor.generate_testcase(linux)
+                    finally:
+                        solver.pop()
+                else:
+                    print Exception, e
+                    executor.generate_testcase(current_state)
+                    print '-'*60
+                    traceback.print_exc(file=sys.stdout)
+                    print '-'*60
+                    import pdb
+                    pdb.set_trace()
 
-except Exception,e:
-    print "Exception in user code:", e
-    print '-'*60
-    traceback.print_exc(file=sys.stdout)
-    print '-'*60
-    import pdb
-    pdb.set_trace()
+    except Exception,e:
+        print "Exception in user code:", e
+        print '-'*60
+        traceback.print_exc(file=sys.stdout)
+        print '-'*60
+        import pdb
+        pdb.set_trace()
 
-print "Results dumped in ", folder
-print count, count/(time.clock()-time_start)
+    print "Results dumped in ", executor.workspace
+    print count, count/(time.clock()-time_start)
+
