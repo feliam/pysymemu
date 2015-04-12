@@ -43,7 +43,7 @@ class MemoryException(Exception):
         @param cause: exception message.
         @param address: memory address where the exception occurred.
         '''
-        super(MemoryException, self, ).__init__("{} {}".format(cause, address))
+        super(MemoryException, self, ).__init__("%s <0x%x>"%(cause, address))
 
 class MMap(object):
     """
