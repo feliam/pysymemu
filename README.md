@@ -21,20 +21,20 @@ Features:
 * Automatic generation of instruction testcases
 * API and instruction documentation
 * Automatic generation of intruction unittests
-
+* Multiple SMT solvers supported through pysmtlib (Z3, YICES, CVC4)
 
 Dependencies:
 -------------
-* distorm3, a disassembler. https://code.google.com/p/distorm/
+* capstone-engine decoder/disassembler. http://www.capstone-engine.org
 * z3, an smt solver. http://z3.codeplex.com/ (1)
 * pyelftool, an ELF parsing library. https://github.com/eliben/pyelftools
 
 Quick install of deps?
 ```
-  echo Installing distorm3
-  svn checkout http://distorm.googlecode.com/svn/trunk/ distorm-read-only
-  cd distorm-read-only
-  python setup.py install
+  echo Installing capstone engine
+  svn checkout https://github.com/aquynh/capstone.git capstone
+  cd capstone
+  make install
   cd ..
   echo Installing pyelftools
   https://github.com/eliben/pyelftools.git
