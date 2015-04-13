@@ -969,6 +969,8 @@ class Cpu(object):
 
         if instruction.mnemonic.upper() in ['REP MOVSB', 'REP MOVSW', 'REP MOVSD']:
             name = 'MOVS'
+        if name == 'MOVABS':
+            name='MOV'
         if name == 'SETNE':
             name = 'SETNZ'
         if name == 'SETE':
@@ -978,7 +980,7 @@ class Cpu(object):
 
         if not hasattr(cpu, name):
             raise InstructionNotImplemented( "Instruction %s at %x Not Implemented (text: %s)" % 
-                    (name, cpu.PC, instruction.bytes.encode('hex')) )
+                    (name, cpu.PC, str(instruction.bytes).encode('hex')) )
         #log
         if logger.level == logging.DEBUG :
             if True:
@@ -3887,7 +3889,6 @@ class Cpu(object):
         '''
         OperandSize = dest.size
         count = ZEXTEND(src.read() & ((1<<OperandSize) -1), OperandSize)
-        print count , src.read(), OperandSize
         value = dest.read()
 
         res = dest.write(value >> count) #UNSIGNED UDIV2 !! TODO Check
@@ -4358,22 +4359,15 @@ class Cpu(object):
         @param dest: destination operand.
         @param src: source operand.
         '''
-        print dest.size, src.size
-        print dir(dest), str(dest)
         dest_reg = CapRegisters[dest.reg]
         mem_reg = CapRegisters[src.mem.base] #, src.type, src.read()
         size = dest.size
         arg0 = dest.read()
         arg1 = src.read()
         res = arg1 - arg0
-        print "DEST:", CapRegisters[dest.reg], arg0
-        print "SRC:", mem_reg, arg1
-        print "Calculate flags", size, res, arg0, arg1
         cpu.calculateFlags('SUB', size, res, arg1, arg0)
-        print "\t ZF",cpu.ZF
 
         increment = ITE(cpu.AddressSize, cpu.DF, -size/8, size/8)
-        print dest_reg, cpu.getRegister(dest_reg) , increment
         cpu.setRegister(mem_reg, cpu.getRegister(mem_reg) + increment)
 
 
@@ -5110,13 +5104,9 @@ class Cpu(object):
         '''
         result = dest.read()
         if dest.size > src.size:
-            print hex(result), dest.size, src.size
             result &= (~((1<<src.size)-1) ) & ((1 << dest.size )-1)
-            print hex(result), dest.size, src.size
             result |= ZEXTEND(src.read(), dest.size)
-            print hex(result), dest.size, src.size
             result = EXTRACT(result, 0, dest.size)
-            print hex(result), dest.size, src.size
             dest.write(result)
         elif dest.size < src.size:
             dest.write( EXTRACT(src.read(), 0, dest.size) )
