@@ -31,14 +31,16 @@ Dependencies:
 
 Quick install of deps?
 ```
+  
   echo Installing Capstone engine
   sudo pip install capstone
+  
   echo Installing pyelftools
-  https://github.com/eliben/pyelftools.git
-  cd pyelftools
-  python setup.py install
-  cd ..
-  #Lets say Z3 depends on arch... 
+  sudo pip install pyelftools
+  
+  #Install z3 SMT solver 
+  echo Go to http://z3.codeplex.com/SourceControl/latest# click Download to download z3 source code
+  echo Make a folder. Unzip z3 inside that folder. dos2unix on configure. Then configure;make
 ```
 
 Directory structure
