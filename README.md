@@ -34,7 +34,8 @@ Quick install of deps?
   echo Installing capstone engine
   svn checkout https://github.com/aquynh/capstone.git capstone
   cd capstone
-  make install
+  ./make.sh
+  sudo ./make.sh install
   cd ..
   echo Installing pyelftools
   https://github.com/eliben/pyelftools.git
