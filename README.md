@@ -25,18 +25,14 @@ Features:
 
 Dependencies:
 -------------
-* capstone-engine decoder/disassembler. http://www.capstone-engine.org
+* Capstone-engine decoder/disassembler. http://www.capstone-engine.org
 * z3, an smt solver. http://z3.codeplex.com/ (1)
 * pyelftool, an ELF parsing library. https://github.com/eliben/pyelftools
 
 Quick install of deps?
 ```
-  echo Installing capstone engine
-  svn checkout https://github.com/aquynh/capstone.git capstone
-  cd capstone
-  ./make.sh
-  sudo ./make.sh install
-  cd ..
+  echo Installing Capstone engine
+  sudo pip install capstone
   echo Installing pyelftools
   https://github.com/eliben/pyelftools.git
   cd pyelftools
