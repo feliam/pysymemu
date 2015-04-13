@@ -10,7 +10,7 @@ setup(
     author = "Felipe Andres Manzano",
     author_email = "feliam@binamuse.com",
     description = ("A tool for symbolic execution of Intel 64 binaries."),
-    requires =  ['pyelftool', 'distorm3' ],
+    requires =  ['pyelftool', 'capstone' ],
     provides =  ['pysymemu'],
     license = "BSD",
     url = 'http://github.com/pysymemu',
