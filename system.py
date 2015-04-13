@@ -36,7 +36,7 @@ import logging
 import traceback
 import argparse
 
-from cpu import Cpu
+from cpu import Cpu, SymbolicLoopException, SymbolicPCException
 from memory import SMemory, MemoryException
 from linux import SLinux, SymbolicFile, File, ProcessExit
 from smtlibv2 import issymbolic, Symbol, Solver, BitVec, Array, Bool, chr
@@ -241,78 +241,107 @@ if __name__ == '__main__':
     executor = Executor(workspace=args.workspace)
     executor.putState(state)
 
+    current_state = None
     print "Starting..."
     try:
         while len(executor.states) != 0:
             #select a suitable state to analize
-            current_state = executor.getState()
+            if current_state is None:
+                current_state = executor.getState()
+
             try:
                 #execute until exception or finnish
                 while current_state.execute():
-                    #assert aaa[len(current_state.trace)-1] == current_state.trace[-1]
-                    #if PC gets "tainted" with symbols do stuff
-                    if issymbolic(current_state.cpu.PC):
-                        #get all possible PC destinations (raise if more tahn 100 options)
-                        vals = list(current_state.solver.getallvalues(current_state.cpu.PC, maxcnt = 100))
-                        print "Symbolic PC found, possible detinations are: ", ["%x"%x for x in vals]
+                   count += 1
+            except SymbolicLoopException, e:
+                counter = current_state.cpu.getRegister(e.reg_name)
+                cmin, cmax = current_state.solver.minmax(counter)
 
-                        #Shuffle the possibilities, 
-                        random.shuffle(vals)
-                        #we will keep one state for the current analisys and save 
-                        #all the rest to files
-                        current_pc = current_state.cpu.PC
-                        for new_pc in vals[1:]:
-                            new_state = current_state.branch()
-                            #add the constraint
-                            new_state.solver.add(new_state.cpu.PC == new_pc)
-                            #and set the PC of the new state to the concrete pc-dest
-                            new_state.cpu.PC = new_pc
-                            #add the state to the list of pending states
-                            executor.putState(new_state)
+                vals = list(set([cmin, cmax, (cmax-cmin)/2]))
 
-                        #keep analizing one of the states already loaded up
-                        new_pc = vals[0]
+                #Shuffle the possibilities, 
+                random.shuffle(vals)
+                #we will keep one state for the current analisys and save 
+                #all the rest to files
+                for new_counter in vals[1:]:
+                    new_state = current_state.branch()
+                    #add the constraint
+                    new_state.solver.add(counter == new_counter)
+                    #and set the PC of the new state to the concrete pc-dest
+                    new_state.cpu.setRegister(e.reg_name, new_counter )
+                    #add the state to the list of pending states
+                    executor.putState(new_state)
 
-                        current_state.solver.add(current_pc == new_pc)
-                        current_state.cpu.PC = new_pc
+                #keep analizing one of the states already loaded up
+                new_counter = vals[0]
 
-                        #Try to do some symplifications to shrink symbolic footprint
-                        try :
-                            bvals = []
-                            current_state.solver.push()
-                            current_state.solver.add(current_state.cpu.IF == True)
-                            if current_state.solver.check()=='sat':
-                                bvals.append(True)
-                            current_state.solver.pop()
-                            current_state.solver.push()
-                            current_state.solver.add(current_state.cpu.IF == False)
-                            if current_state.solver.check()=='sat':
-                                bvals.append(False)
-                            current_state.solver.pop()
-                            if len(bvals) == 1:
-                                current_state.cpu.IF = bvals[0]
-                        except Exception,e:
-                            print "EEXXXXX",e,current_state.cpu.IF
-                            pass
-                        current_state.cpu.IF = current_state.solver.simplify(current_state.cpu.IF)
-                        current_state.cpu.RAX = current_state.solver.simplify(current_state.cpu.RAX)
-                        current_state.cpu.RCX = current_state.solver.simplify(current_state.cpu.RCX)
-                        current_state.cpu.RSI = current_state.solver.simplify(current_state.cpu.RSI)
-                        current_state.cpu.RDI = current_state.solver.simplify(current_state.cpu.RDI)
-                        #save a checkpoint of the current state
-                        #pickle.dump(linux,file(folder+os.sep+name,'w+'),2)
+                current_state.solver.add(counter == new_counter)
+                new_state.cpu.setRegister(e.reg_name, new_counter)
 
 
-                        new_pc=None
-                        vals = None
+            except SymbolicPCException, e:
+                #if PC gets "tainted" with symbols do stuff
+                assert issymbolic(current_state.cpu.PC)
+                #get all possible PC destinations (raise if more tahn 100 options)
+                vals = list(current_state.solver.getallvalues(current_state.cpu.PC, maxcnt = 100))
+                print "Symbolic PC found, possible detinations are: ", ["%x"%x for x in vals]
 
-                    count += 1
+                #Shuffle the possibilities, 
+                random.shuffle(vals)
+                #we will keep one state for the current analisys and save 
+                #all the rest to files
+                current_pc = current_state.cpu.PC
+                for new_pc in vals[1:]:
+                    new_state = current_state.branch()
+                    #add the constraint
+                    new_state.solver.add(new_state.cpu.PC == new_pc)
+                    #and set the PC of the new state to the concrete pc-dest
+                    new_state.cpu.PC = new_pc
+                    #add the state to the list of pending states
+                    executor.putState(new_state)
 
+                #keep analizing one of the states already loaded up
+                new_pc = vals[0]
+
+                current_state.solver.add(current_pc == new_pc)
+                current_state.cpu.PC = new_pc
+
+                #Try to do some symplifications to shrink symbolic footprint
+                try :
+                    bvals = []
+                    current_state.solver.push()
+                    current_state.solver.add(current_state.cpu.IF == True)
+                    if current_state.solver.check()=='sat':
+                        bvals.append(True)
+                    current_state.solver.pop()
+                    current_state.solver.push()
+                    current_state.solver.add(current_state.cpu.IF == False)
+                    if current_state.solver.check()=='sat':
+                        bvals.append(False)
+                    current_state.solver.pop()
+                    if len(bvals) == 1:
+                        current_state.cpu.IF = bvals[0]
+                except Exception,e:
+                    print "EEXXXXX",e,current_state.cpu.IF
+                    pass
+                current_state.cpu.IF = current_state.solver.simplify(current_state.cpu.IF)
+                current_state.cpu.RAX = current_state.solver.simplify(current_state.cpu.RAX)
+                current_state.cpu.RCX = current_state.solver.simplify(current_state.cpu.RCX)
+                current_state.cpu.RSI = current_state.solver.simplify(current_state.cpu.RSI)
+                current_state.cpu.RDI = current_state.solver.simplify(current_state.cpu.RDI)
+                #save a checkpoint of the current state
+                #pickle.dump(linux,file(folder+os.sep+name,'w+'),2)
+
+
+                new_pc=None
+                vals = None
 
             except ProcessExit, e:
                 test_case_no+=1
                 print "Program Finnished correctly"
                 executor.generate_testcase(current_state)
+                current_state = None
+
             except Exception,e:
                 test_case_no+=1
                 if e.message == "Max number of different solutions hit":
@@ -339,6 +368,7 @@ if __name__ == '__main__':
                     print '-'*60
                     import pdb
                     pdb.set_trace()
+                current_state = None
 
     except Exception,e:
         print "Exception in user code:", e
