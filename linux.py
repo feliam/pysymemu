@@ -15,13 +15,11 @@ class SyscallNotImplemented(Exception):
         system call. Go to linux.py and add it!
     '''
     def __init__(self, mode, number):
-        self.mode = mode
-        self.number
-        super(Exception, self).__init__("%s bit system call number %s Not Implemented", mode, number)
+        super(Exception, self).__init__("%s bit system call number %s Not Implemented" % (mode, number))
 
 class ProcessExit(Exception):
     def __init__(self, code):
-        super(Exception, self).__init__("Process exited correctly. Code: %s", code)
+        super(Exception, self).__init__("Process exited correctly. Code: %s" % code)
 
 
 
@@ -1163,7 +1161,7 @@ class Linux(object):
 
                 }
         if cpu.RAX not in syscalls.keys():
-            raise SyscallNotImplemented("64 bit system call number %s Not Implemented", cpu.RAX)
+            raise SyscallNotImplemented(64, cpu.RAX)
 
         func = syscalls[cpu.RAX]
         logger.debug("SYSCALL64: %s (nargs: %d)", func.func_name, func.func_code.co_argcount)
@@ -1208,7 +1206,7 @@ class Linux(object):
                      0x00000014: self.sys_getpid,
                     }
         if cpu.EAX not in syscalls.keys():
-            raise SyscallNotImplemented("32 bit system call number %s Not Implemented" % cpu.EAX)
+            raise SyscallNotImplemented(32, cpu.EAX)
         func = syscalls[cpu.EAX]
         logger.debug("SYSCALL32: %s (nargs: %d)", func.func_name, func.func_code.co_argcount)
         nargs = func.func_code.co_argcount
