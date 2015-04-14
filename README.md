@@ -141,8 +141,8 @@ return 0;
 Now run it under the emulator like this. First create 3 dummy files to replace the virtual/emulated stdin, stdout and stderr
 
 ```
- $ touch > stderr
- $ touch > stdout
+ $ touch stderr
+ $ touch stdout
  $ echo ++++++++++ > stdin
 ```
 
