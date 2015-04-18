@@ -128,25 +128,24 @@ def rep(old_method):
                 cpu.PC = cpu.PC + cpu.instruction.size
             #Repeat!
             else:
-	        first = True
-		previous_ZF = False
-		previous_CF = False
+                first = True
+                previous_ZF = False
+                previous_CF = False
                 while count > 0:
                     count -= 1
                     cpu.setRegister(counter_name, count)
                     old_method(cpu, *args, **kw_args)
-                    if cpu.instruction.mnemonic.upper().split(' ')[0] == 'REPE':
-			if first:
-			    previous_ZF = cpu.ZF
-			    previous_CF = cpu.CF
-			    first = False
-			else:
+                    if first:
+                        previous_ZF = cpu.ZF
+                        previous_CF = cpu.CF
+                        first = False
+                    else:
                             previous_ZF = AND(cpu.ZF, previous_ZF)
                             previous_CF = AND(cpu.CF, previous_CF)
-		cpu.ZF = previous_ZF
-		cpu.CF = previous_CF
-		cpu.IF = False
-		cpu.PC += cpu.instruction.size
+                cpu.ZF = previous_ZF
+                cpu.CF = previous_CF
+                cpu.IF = False
+                cpu.PC += cpu.instruction.size
         else:
             cpu.PC += cpu.instruction.size
             old_method(cpu, *args,**kw_args)
