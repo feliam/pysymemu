@@ -123,25 +123,30 @@ def rep(old_method):
             if issymbolic(count):
                 raise SymbolicLoopException(counter_name)
 
-            cpu.IF = count > 0
-
-            #Repeate!
-            if cpu.IF:
-                count -= 1
-                cpu.setRegister(counter_name, count)
-                #if 'FLAG_REPNZ' in cpu.instruction.flags:
-                if X86_PREFIX_REP in prefix:
-                    cpu.IF = count != 0
-                #elif 'FLAG_REPZ' in cpu.instruction.flags:
-                elif X86_PREFIX_REPNE in prefix:
-                    cpu.IF = AND(cpu.ZF == False, count != 0)
-                cpu.PC = ITE(cpu.AddressSize, cpu.IF, cpu.PC, cpu.PC + cpu.instruction.size)
-                old_method(cpu, *args, **kw_args)
-
             #Advance!
-            else:
+            if count <= 0:
                 cpu.PC = cpu.PC + cpu.instruction.size
-
+            #Repeat!
+            else:
+	        first = True
+		previous_ZF = False
+		previous_CF = False
+                while count > 0:
+                    count -= 1
+                    cpu.setRegister(counter_name, count)
+                    old_method(cpu, *args, **kw_args)
+                    if cpu.instruction.mnemonic.upper().split(' ')[0] == 'REPE':
+			if first:
+			    previous_ZF = cpu.ZF
+			    previous_CF = cpu.CF
+			    first = False
+			else:
+                            previous_ZF = AND(cpu.ZF, previous_ZF)
+                            previous_CF = AND(cpu.CF, previous_CF)
+		cpu.ZF = previous_ZF
+		cpu.CF = previous_CF
+		cpu.IF = False
+		cpu.PC += cpu.instruction.size
         else:
             cpu.PC += cpu.instruction.size
             old_method(cpu, *args,**kw_args)
@@ -221,7 +226,10 @@ class Register64(object):
     def setX(self, val):
         assert isinstance(val, (int,long)) or (isinstance(val, BitVec) and val.size == 16)
         val = EXTRACT(val, 0,16)
-        self._RX = self._RX & 0xFFFFFFFFFFFF0000 | ZEXTEND(val,64)
+        if isinstance(val, BitVec):
+            self._RX = ZEXTEND(val,64)
+        else:
+            self._RX = self._RX & 0xFFFFFFFFFFFF0000 | ZEXTEND(val,64)
         self._cache = { 'X': val}
         return val
     def getX(self):
@@ -230,6 +238,7 @@ class Register64(object):
     def setH(self, val):
         assert isinstance(val, (int,long)) or (isinstance(val, BitVec) and val.size == 8)
         val = EXTRACT(val, 0,8)
+        #TODO: handle BitVec val
         self._RX = self._RX & 0xFFFFFFFFFFFF00FF | ZEXTEND(val,64) << 8
         self._cache = {'H': val, 'L': self.getL()}
         return val
@@ -239,7 +248,10 @@ class Register64(object):
     def setL(self, val):
         assert isinstance(val, (int,long)) or (isinstance(val, BitVec) and val.size == 8)
         val = EXTRACT(val, 0,8)
-        self._RX = self._RX & 0xFFFFFFFFFFFFFF00 | ZEXTEND(val,64)
+        if isinstance(val, BitVec):
+            self._RX = ZEXTEND(val,64)
+        else:
+            self._RX = self._RX & 0xFFFFFFFFFFFFFF00 | ZEXTEND(val,64)
         self._cache = {'L': val, 'H': self.getH()}
         return val
     def getL(self):
@@ -2687,7 +2699,7 @@ class Cpu(object):
         
         @param cpu: current CPU.
         @param dest: destination operand.        
-         '''
+        '''
         dest.write(ITE(dest.size, (cpu.CF | cpu.ZF)==False, 1, 0))
 
     @instruction
@@ -4209,10 +4221,9 @@ class Cpu(object):
         cpu.setRegister(src_reg, cpu.getRegister(src_reg) + increment)
         cpu.setRegister(dest_reg, cpu.getRegister(dest_reg) + increment)
 
-    '''
     @rep
-    def CMPSB(cpu):
-         
+    def CMPSB(cpu, dest, src):
+        '''
         Compares string operands.
         
         Compares the byte, word, double word or quad specified with the first source 
@@ -4227,16 +4238,13 @@ class Cpu(object):
         @param cpu: current CPU.
         @param dest: first source operand.
         @param src: second source operand.    
-        
-        
+        '''
         src_reg = {8: 'SI', 32: 'ESI', 64: 'RSI'}[cpu.AddressSize]
         dest_reg = {8: 'DI', 32: 'EDI', 64: 'RDI'}[cpu.AddressSize]
-
         src_addr = cpu.getRegister(src_reg)
         dest_addr = cpu.getRegister(dest_reg)
         size = 8 #Selected by opcode
 
-        sys.stdin.readline()
         #Compare
         arg0 = cpu.load(dest_addr, size)
         arg1 = cpu.load(src_addr, size)
@@ -4248,7 +4256,6 @@ class Cpu(object):
 
         cpu.setRegister(src_reg, src_addr + increment)
         cpu.setRegister(dest_reg, dest_addr + increment)
-        '''
 
     def LODS(cpu, dest):
         ''' 
