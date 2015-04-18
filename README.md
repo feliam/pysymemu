@@ -12,7 +12,7 @@ Features:
 * Implements most x86/amd64 instructions
 * Loads ELF32 and ELF64 files
 * Enables to recreate specific machine states by API
-* Instruccion semantics *easy* to read and extend
+* Instruction semantics *easy* to read and extend
 * Instruction set can operate in concrete or symbolic values
 * Memory modeled so it can be concrete or symbolic (and is COW-enabled)
 * Handles operations on symbolic pointers and indexes 
