@@ -43,7 +43,7 @@ class MemoryException(Exception):
         @param cause: exception message.
         @param address: memory address where the exception occurred.
         '''
-        super(MemoryException, self, ).__init__("%s <0x%x>"%(cause, address))
+        super(MemoryException, self, ).__init__("{} <{}>".format(cause, address))
 
 class MMap(object):
     """
@@ -1089,7 +1089,7 @@ class SMemory(Memory):
             self.solver.add(addr.ule(addr_max))
             logger.debug("Range: %x <-> %x", addr_min, addr_max)
             if addr_max-addr_min > 0x10000000:
-                raise MemoryException("Dangling symbolic pointer[0x%08x-0x%08x]"%(addr_min, addr_max), addr)
+                raise MemoryException("Dangling symbolic pointer [0x%08x-0x%08x]"%(addr_min, addr_max), addr)
             #Symbolic address case
             for i in xrange(addr_min, addr_max+1):
                 if not self.isReadable(i):
