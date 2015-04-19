@@ -966,7 +966,8 @@ class Cpu(object):
             name = 'CMOVZ'
         if name == 'CMOVNE':
             name = 'CMOVNZ'
-
+        if name == 'MOVUPS':
+            name = 'MOV'
         if instruction.mnemonic.upper() in ['REP MOVSB', 'REP MOVSW', 'REP MOVSD']:
             name = 'MOVS'
         if name == 'MOVABS':
@@ -3820,7 +3821,8 @@ class Cpu(object):
         SIGN_MASK = 1<<(OperandSize-1)
 
         cpu.CF = (tempCount==0) & cpu.CF | (tempCount!=0) & (tempDest & (1<< (OperandSize-tempCount)) != 0)
-        cpu.OF = (tempCount==0) & cpu.OF | (tempCount!=0) & ( (res & SIGN_MASK  ^ cpu.CF) )
+        #TODO FIX with ITE
+        #cpu.OF = (tempCount==0) & cpu.OF | (tempCount!=0) & ( (res & SIGN_MASK  ^ cpu.CF) )
         cpu.SF = (tempCount==0) & cpu.SF | (tempCount!=0) & ((res & SIGN_MASK) != 0)
         cpu.ZF = (tempCount==0) & cpu.ZF | (tempCount!=0) & (res == 0)
         cpu.PF = (tempCount==0) & cpu.PF | (tempCount!=0) & ((res ^ res>>1 ^ res>>2 ^ res>>3 ^ res>>4 ^ res>>5 ^ res>>6 ^ res>>7)&1 == 0)
@@ -5212,16 +5214,16 @@ DEST[255:0] <- SRC[255:0]
         raise NotImplemented()
     @instruction
     def PINSRW(cpu, dest, src, count):
-        if src.size == 64:
+        if dest.size == 64:
             #PINSRW instruction with 64-bit source operand:
-            sel = count & 3
+            sel = count.read() & 3
             mask = [0x000000000000FFFF, 0x00000000FFFF0000, 0x0000FFFF00000000, 0xFFFF000000000000 ][sel]
         else:
             #PINSRW instruction with 128-bit source operand
-            assert src.size == 128
-            sel = count & 7
+            assert dest.size == 128
+            sel = count.read() & 7
             mask = [0x0000000000000000000000000000FFFF,0x000000000000000000000000FFFF0000,0x00000000000000000000FFFF00000000,0x0000000000000000FFFF000000000000,0x000000000000FFFF0000000000000000,0x00000000FFFF00000000000000000000,0x0000FFFF000000000000000000000000,0xFFFF0000000000000000000000000000][sel]
-        dest.write( (dest.read() & ~mask) |  ((src.read() << (sel * 16)) & mask) )
+        dest.write( (dest.read() & ~mask) |  ((ZEXTEND(src.read(),dest.size) << (sel * 16)) & mask) )
 
     @instruction
     def PEXTRW(cpu, dest, src, count):
