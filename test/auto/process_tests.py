@@ -54,6 +54,8 @@ class CPUTest(unittest.TestCase):
         def putchar(self, addr, char):
             #print "putchar",hex(addr), "%02x"%ord(char)
             self.mem[addr]=char
+        def isExecutable(self, addr):
+            return True
 """
 
 from flags import flags
