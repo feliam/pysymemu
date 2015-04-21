@@ -39,7 +39,7 @@ import argparse
 from cpu import Cpu, SymbolicLoopException, SymbolicPCException
 from memory import SMemory, MemoryException
 from linux import SLinux, SymbolicFile, File, ProcessExit
-from smtlibv2 import issymbolic, Symbol, Solver, BitVec, Array, Bool, chr
+from smtlib import issymbolic, Symbol, Solver, BitVec, Array, Bool, chr
 
 
 class State(object):

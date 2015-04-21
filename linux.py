@@ -2,7 +2,7 @@ import weakref
 import sys, os, fcntl, struct
 import cpu
 
-from smtlibv2 import chr, ord
+from smtlib import chr, ord
 from elftools.elf.elffile import ELFFile
 from contextlib import closing
 

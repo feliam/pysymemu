@@ -28,7 +28,7 @@
 import mmap
 from weakref import WeakValueDictionary
 from cStringIO import StringIO
-from smtlibv2 import issymbolic, UGE, OR, AND, chr, ord, Solver
+from smtlib import issymbolic, UGE, OR, AND, chr, ord, Solver
 
 import logging
 logger = logging.getLogger("MEMORY")
