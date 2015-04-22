@@ -125,23 +125,25 @@ def rep(old_method):
 
             cpu.IF = count > 0
 
-            #Repeate!
+            #Repeat!
             if cpu.IF:
                 count -= 1
                 cpu.setRegister(counter_name, count)
-                #if 'FLAG_REPNZ' in cpu.instruction.flags:
-                if X86_PREFIX_REP in prefix:
-                    cpu.IF = count != 0
-                #elif 'FLAG_REPZ' in cpu.instruction.flags:
-                elif X86_PREFIX_REPNE in prefix:
-                    cpu.IF = AND(cpu.ZF == False, count != 0)
-                cpu.PC = ITE(cpu.AddressSize, cpu.IF, cpu.PC, cpu.PC + cpu.instruction.size)
+
+                previous_ZF = cpu.ZF
+                previous_CF = cpu.CF
+
                 old_method(cpu, *args, **kw_args)
 
+                if cpu.PC == cpu.PPC:
+                    cpu.ZF = AND(cpu.ZF, previous_ZF)
+                    cpu.CF = AND(cpu.CF, previous_CF)
+
+                if count == 0:
+                    cpu.PC += cpu.instruction.size
             #Advance!
             else:
                 cpu.PC = cpu.PC + cpu.instruction.size
-
         else:
             cpu.PC += cpu.instruction.size
             old_method(cpu, *args,**kw_args)
@@ -559,6 +561,23 @@ class Cpu(object):
     FLAGS = property(getFLAGS, setRFLAGS)
 
     #Special Registers
+    def getPPC(self):
+        '''
+        Returns the previous program counter.
+
+        @rtype: int
+        @return: the previous program counter value.
+        '''
+        return getattr(self, 'previous_PC')
+    def setPPC(self, value):
+        '''
+        Set the previous program counter value.
+
+        @param value: the new value for the previous program counter.
+        '''
+        return setattr(self, 'previous_PC', value)
+    PPC = property(getPPC,setPPC)
+
     def getPC(self):
         '''
         Returns the current program counter.
@@ -991,8 +1010,12 @@ class Cpu(object):
             for l in cpu.dumpregs().split('\n'):
                 logger.debug(l)
 
+        previous_PC = cpu.PC
+
         implementation = getattr(cpu, name)
         implementation(*instruction.operands)
+
+        cpu.PPC = previous_PC
 
         #housekeeping
         cpu.icount += 1
@@ -2358,6 +2381,21 @@ class Cpu(object):
         '''
         dest.write(ITE(dest.size, (cpu.SF ^ cpu.OF)==0, src.read(), dest.read()))
 
+    #CMOVNLE
+    @instruction
+    def CMOVG(cpu, dest, src):
+        '''
+        Conditional move - Greater/not less than or equal.
+
+        Tests the status flags in the EFLAGS register and moves the source operand
+        (second operand) to the destination operand (first operand) if the given
+        test condition is true.
+
+        @param cpu: current CPU.
+        @param dest: destination operand.
+        @param src: source operand.
+        '''
+        dest.write(ITE(dest.size, AND((cpu.SF ^ cpu.OF)==0,cpu.ZF==0), src.read(), dest.read()))
 
     #CMOVNGE
     @instruction
@@ -2688,7 +2726,7 @@ class Cpu(object):
         
         @param cpu: current CPU.
         @param dest: destination operand.        
-         '''
+        '''
         dest.write(ITE(dest.size, (cpu.CF | cpu.ZF)==False, 1, 0))
 
     @instruction
@@ -4211,10 +4249,9 @@ class Cpu(object):
         cpu.setRegister(src_reg, cpu.getRegister(src_reg) + increment)
         cpu.setRegister(dest_reg, cpu.getRegister(dest_reg) + increment)
 
-    '''
     @rep
-    def CMPSB(cpu):
-         
+    def CMPSB(cpu, dest, src):
+        '''
         Compares string operands.
         
         Compares the byte, word, double word or quad specified with the first source 
@@ -4229,16 +4266,13 @@ class Cpu(object):
         @param cpu: current CPU.
         @param dest: first source operand.
         @param src: second source operand.    
-        
-        
+        '''
         src_reg = {8: 'SI', 32: 'ESI', 64: 'RSI'}[cpu.AddressSize]
         dest_reg = {8: 'DI', 32: 'EDI', 64: 'RDI'}[cpu.AddressSize]
-
         src_addr = cpu.getRegister(src_reg)
         dest_addr = cpu.getRegister(dest_reg)
         size = 8 #Selected by opcode
 
-        sys.stdin.readline()
         #Compare
         arg0 = cpu.load(dest_addr, size)
         arg1 = cpu.load(src_addr, size)
@@ -4250,7 +4284,6 @@ class Cpu(object):
 
         cpu.setRegister(src_reg, src_addr + increment)
         cpu.setRegister(dest_reg, dest_addr + increment)
-        '''
 
     def LODS(cpu, dest):
         ''' 
