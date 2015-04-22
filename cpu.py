@@ -123,29 +123,27 @@ def rep(old_method):
             if issymbolic(count):
                 raise SymbolicLoopException(counter_name)
 
-            #Advance!
-            if count <= 0:
-                cpu.PC = cpu.PC + cpu.instruction.size
+            cpu.IF = count > 0
+
             #Repeat!
+            if cpu.IF:
+                count -= 1
+                cpu.setRegister(counter_name, count)
+
+                previous_ZF = cpu.ZF
+                previous_CF = cpu.CF
+
+                old_method(cpu, *args, **kw_args)
+
+                if cpu.PC == cpu.PPC:
+                    cpu.ZF = AND(cpu.ZF, previous_ZF)
+                    cpu.CF = AND(cpu.CF, previous_CF)
+
+                if count == 0:
+                    cpu.PC += cpu.instruction.size
+            #Advance!
             else:
-                first = True
-                previous_ZF = False
-                previous_CF = False
-                while count > 0:
-                    count -= 1
-                    cpu.setRegister(counter_name, count)
-                    old_method(cpu, *args, **kw_args)
-                    if first:
-                        previous_ZF = cpu.ZF
-                        previous_CF = cpu.CF
-                        first = False
-                    else:
-                            previous_ZF = AND(cpu.ZF, previous_ZF)
-                            previous_CF = AND(cpu.CF, previous_CF)
-                cpu.ZF = previous_ZF
-                cpu.CF = previous_CF
-                cpu.IF = False
-                cpu.PC += cpu.instruction.size
+                cpu.PC = cpu.PC + cpu.instruction.size
         else:
             cpu.PC += cpu.instruction.size
             old_method(cpu, *args,**kw_args)
@@ -563,6 +561,23 @@ class Cpu(object):
     FLAGS = property(getFLAGS, setRFLAGS)
 
     #Special Registers
+    def getPPC(self):
+        '''
+        Returns the previous program counter.
+
+        @rtype: int
+        @return: the previous program counter value.
+        '''
+        return getattr(self, 'previous_PC')
+    def setPPC(self, value):
+        '''
+        Set the previous program counter value.
+
+        @param value: the new value for the previous program counter.
+        '''
+        return setattr(self, 'previous_PC', value)
+    PPC = property(getPPC,setPPC)
+
     def getPC(self):
         '''
         Returns the current program counter.
@@ -994,8 +1009,12 @@ class Cpu(object):
             for l in cpu.dumpregs().split('\n'):
                 logger.debug(l)
 
+        previous_PC = cpu.PC
+
         implementation = getattr(cpu, name)
         implementation(*instruction.operands)
+
+        cpu.PPC = previous_PC
 
         #housekeeping
         cpu.icount += 1
@@ -2361,6 +2380,21 @@ class Cpu(object):
         '''
         dest.write(ITE(dest.size, (cpu.SF ^ cpu.OF)==0, src.read(), dest.read()))
 
+    #CMOVNLE
+    @instruction
+    def CMOVG(cpu, dest, src):
+        '''
+        Conditional move - Greater/not less than or equal.
+
+        Tests the status flags in the EFLAGS register and moves the source operand
+        (second operand) to the destination operand (first operand) if the given
+        test condition is true.
+
+        @param cpu: current CPU.
+        @param dest: destination operand.
+        @param src: source operand.
+        '''
+        dest.write(ITE(dest.size, AND((cpu.SF ^ cpu.OF)==0,cpu.ZF==0), src.read(), dest.read()))
 
     #CMOVNGE
     @instruction
