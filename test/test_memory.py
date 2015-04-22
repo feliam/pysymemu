@@ -26,7 +26,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from cStringIO import StringIO
-from smtlibv2 import Solver, issymbolic, isconcrete, OR, AND, chr, ord
+from smtlib import Solver, issymbolic, isconcrete, OR, AND, chr, ord
 import unittest
 import tempfile, os
 import gc, pickle

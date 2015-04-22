@@ -24,7 +24,7 @@ for test in tests:
 
 
 print """
-from smtlibv2 import Solver
+from smtlib import Solver
 from cpu import Cpu
 
 import unittest
@@ -66,6 +66,9 @@ class SymCPUTest(unittest.TestCase):
             return self.mem[addr]
         def putchar(self, addr, char):
             self.mem[addr]=char
+        def isExecutable(self, addr):
+            return True
+
 
 """
 
