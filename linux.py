@@ -627,6 +627,7 @@ class Linux(object):
         '''
         data = self.files[fd].read(count)
         cpu.write(buf, data)
+        logger.debug("READ %d %x %d -> %s",fd,buf,count,repr(data[:10]))
         return len(data)
 
     def sys_close(self, cpu, fd):
@@ -1528,11 +1529,13 @@ class SymbolicFile(object):
                 self.array[i] = data[i]
             else:
                 symbols_cnt+=1
-        if symbols_cnt > max_size:
-            logger.warning("Found more free symbolic vlues than allowed (%d > %d)",symbols_cnt, max_size)
 
         self.pos = 0
         self.max_size=min(len(data), max_size)
+        if symbols_cnt > max_size:
+            logger.warning("Found more free symbolic values than allowed (%d > %d)",symbols_cnt, max_size)
+        else:
+            logger.info("Found %d free symbolic values on file %s",symbols_cnt, path.name)
 
     def __getstate__(self):
         state = {}

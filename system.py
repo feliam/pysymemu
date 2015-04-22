@@ -253,10 +253,12 @@ if __name__ == '__main__':
                 while current_state.execute():
                    count += 1
             except SymbolicLoopException, e:
+
                 counter = current_state.cpu.getRegister(e.reg_name)
                 cmin, cmax = current_state.solver.minmax(counter)
 
                 vals = list(set([cmin, cmax, (cmax-cmin)/2]))
+                print "Symbolic LOOP found, possible detinations are: ", ["%x"%x for x in vals]
 
                 #Shuffle the possibilities, 
                 random.shuffle(vals)
