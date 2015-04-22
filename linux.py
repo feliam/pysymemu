@@ -324,7 +324,6 @@ class Linux(object):
             except Exception, e:
                 logger.debug("Exception zeroing main elf fractional pages: %s"%str(e))
         self.mem.mprotect(self.mem._floor(elf_bss), elf_brk-elf_bss, saved_perms)
-        #TODO: FIX mprotect as it was before zeroing?
 
         reserved = self.mem.mmap(base+vaddr+memsz,0x1000000,'   ')
         interpreter_base = 0
