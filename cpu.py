@@ -139,8 +139,7 @@ def rep(old_method):
                     cpu.ZF = AND(cpu.ZF, previous_ZF)
                     cpu.CF = AND(cpu.CF, previous_CF)
 
-                if count == 0:
-                    cpu.PC += cpu.instruction.size
+                cpu.PC = ITE(cpu.AddressSize, count != 0, cpu.PC, cpu.PC + cpu.instruction.size)
             #Advance!
             else:
                 cpu.PC = cpu.PC + cpu.instruction.size
