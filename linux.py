@@ -849,6 +849,25 @@ class Linux(object):
             self.files[fd].write(value)
         return size 
 
+    def sys_readlink(self, cpu, path, buf, bufsize):
+        '''
+        Read
+        @rtype: int
+        
+        @param cpu: current CPU.
+        @param path: the "link path id"
+        @param buf: the buffer where the bytes will be putted. 
+        @param bufsize: the max size for read the link.
+        @todo: Out eax number of bytes actually sent | EAGAIN | EBADF | EFAULT | EINTR | EINVAL | EIO | ENOSPC | EPIPE
+        '''
+        if bufsize <= 0:
+            return -EINVAL
+        filename = self._read_string(cpu, path)
+        data = os.readlink(filename)[:bufsize]
+        cpu.write(buf, data)
+        logger.debug("READLINK %d %x %d -> %s",path,buf,bufsize,repr(data[:10]))
+        return len(data[:bufsize])
+
     def sys_exit_group(self, cpu, error_code):
         '''
         Exits all threads in a process
@@ -1186,6 +1205,7 @@ class Linux(object):
                      0x00000025: self.sys_kill,
                      0x0000002d: self.sys_brk,
                      0x00000036: self.sys_ioctl,
+                     0x00000055: self.sys_readlink,
                      0x00000059: self.sys_acct,
                      0x0000005b: self.sys_munmap,
                      0x0000007a: self.sys_uname, 
