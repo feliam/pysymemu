@@ -68,7 +68,6 @@ class DivideError(Exception):
     ''' A division by zero '''
     pass
 
-
 class Interruption(Exception):
     ''' '''
     def __init__(self, N):
@@ -134,15 +133,16 @@ def rep(old_method):
             #Repeate!
             if cpu.IF:
                 old_method(cpu, *args, **kw_args)
+                count -= 1
 
                 #if 'FLAG_REPNZ' in cpu.instruction.flags:
                 if X86_PREFIX_REP in prefix:
-                    cpu.IF = AND(cpu.ZF == False, count != 0)  #true IF means loop
+                    cpu.IF = count !=0 #AND(cpu.ZF == False, count != 0)  #true IF means loop
                 #elif 'FLAG_REPZ' in cpu.instruction.flags:
                 elif X86_PREFIX_REPNE in prefix:
                     cpu.IF = cpu.ZF == False  #true IF means loop
 
-                cpu.setRegister(counter_name, count-1)
+                cpu.setRegister(counter_name, count)
 
                 cpu.PC = ITE(cpu.AddressSize, cpu.IF, cpu.PC, cpu.PC + cpu.instruction.size)
 
@@ -784,16 +784,16 @@ class Cpu(object):
             seg = cpu.instruction.reg_name(o.mem.segment).upper()
             if seg in cpu.segments:
                 address += cpu.segments[seg][cpu.getRegister(seg)]
+
         if o.mem.base != 0:
             base = cpu.instruction.reg_name(o.mem.base).upper()
-
             address += cpu.getRegister(base)
         if o.mem.index != 0:
             index = cpu.instruction.reg_name(o.mem.index).upper()
             address += o.mem.scale*cpu.getRegister(index)
         if o.mem.disp != 0:
             address += o.mem.disp
-
+ 
         return address & ((1<<cpu.AddressSize)-1)
 
     def readOperandCapstone(cpu, o):
@@ -3272,7 +3272,6 @@ class Cpu(object):
         @param cpu: current CPU.
         @param target: destination operand.         
         '''
-        print cpu.CF
         cpu.PC = ITE(cpu.AddressSize, cpu.CF, target.read(), cpu.PC)
 
     @instruction
@@ -3906,9 +3905,8 @@ class Cpu(object):
         @param src: count operand.
         '''
         OperandSize = dest.size
-        count = ZEXTEND(src.read() & ((1<<OperandSize) -1), OperandSize)
+        count = ZEXTEND(src.read() & (OperandSize-1) , OperandSize)
         value = dest.read()
-
         res = dest.write(value >> count) #UNSIGNED UDIV2 !! TODO Check
 
         #cpu.calculateFlags('SHR', OperandSize, res, tempDest, tempCount)
@@ -4380,7 +4378,6 @@ class Cpu(object):
         arg0 = dest.read()
         arg1 = src.read()
         res = arg0 - arg1
-        print "COMPARING", "[%s]="%mem_reg, arg1, " with ", "%s="%dest_reg, arg0
         cpu.calculateFlags('SUB', size, res, arg1, arg0)
         #cpu.ZF =  arg1 == arg0
 
@@ -4915,8 +4912,13 @@ class Cpu(object):
         @param dest: destination operand.
         @param src: source operand.
         '''
-        
-        dest.write(src.read())
+        if dest.size > src.size: 
+            high = dest.read()                    &     (((1<< (dest.size/2))-1) << (dest.size/2))
+            low  = ZEXTEND(src.read(), dest.size) &     ((1<< (dest.size/2))-1)
+            dest.write(high|low)
+        else:
+            dest.write(EXTRACT(0,dest.size,src.read()))
+
 
     @instruction
     def MOVHPD(cpu, dest, src):
