@@ -78,6 +78,7 @@ class Gdb(subprocess.Popen):
         if self._arch is not None:
             return self._arch
         infotarget = self.correspond('info target\n')
+	print infotarget
         if 'elf32-i386' in infotarget:
             self._arch = 'i386'
             return 'i386'
@@ -178,13 +179,17 @@ while True:
                     base = instruction.reg_name(o.mem.base).upper()
                     registers[base] = gdb.getR(base)
                     address += registers[base]
+                    if name in ['RIP','EIP']:
+                        address += instruction.size
                 if o.mem.index != 0:
                     name = instruction.reg_name(o.mem.index).upper()
                     registers[name] = gdb.getR(name)
                     address += o.mem.scale*registers[name]
+                    if name in ['RIP','EIP']:
+                        address += instruction.size
 
-                for i in range(address, address+o.size):
-                    memory[i] = chr(gdb.getByte(i))
+                for i in range(o.size):
+                    memory[address+i] = chr(gdb.getByte(address+i))
 
         if instruction.insn_name().upper() in STACK_INSTRUCTIONS:
             #save a bunch of stack
@@ -268,8 +273,8 @@ while True:
         print '-'*60
         traceback.print_exc(file=sys.stdout)
         print '-'*60
-        import pdb
-        pdb.set_trace()
+        #import pdb
+        #pdb.set_trace()
         print "#", e
         print "instruction", dir(instruction)
         if not stepped:
