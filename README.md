@@ -99,7 +99,7 @@ The commandline gives you a somehow confusing help. :)
    --env ENV            A environment variable to pass to the program (ex. VAR=VALUE)
 ```
 
-Basicaly you pass a binary file for pysymemu to emulate. Let's try the toy examples:
+Basically you pass a binary file for pysymemu to emulate. Let's try the toy examples:
 
 ```
  $ cd examples
