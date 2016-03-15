@@ -438,6 +438,12 @@ class Linux(object):
         # ----------------------------------------------------------------------
         argvlst=[]
         envplst=[]
+
+
+        stack-=16
+        cpu.write(stack, "A"*16)
+        AT_RANDOM = stack
+
         #end envp marker empty string
         stack-=1
         cpu.write(stack,'\x00')
@@ -478,6 +484,7 @@ class Linux(object):
                             14, 1000, 
                             17, 100, 
                             23, 0,
+                            25, AT_RANDOM,
                             0, 0]):
             stack-=bsz
             cpu.store(stack,i,addressbitsize)
