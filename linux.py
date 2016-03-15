@@ -478,6 +478,7 @@ class Linux(object):
                             14, 1000, 
                             17, 100, 
                             23, 0,
+                            25, base+vaddr,
                             0, 0]):
             stack-=bsz
             cpu.store(stack,i,addressbitsize)
