@@ -83,10 +83,10 @@ The commandline gives you a somehow confusing help. :)
                  [--stdout STDOUT] [--stderr STDERR] [--env ENV]
                  PROGRAM ...
 
- Symbolically analize a program
+ Symbolically analyze a program
 
  positional arguments:
-   PROGRAM              Program to analize
+   PROGRAM              Program to analyze
    ...                  Program arguments. Need a -- separator. Ex: -- -y 2453
  
  optional arguments:

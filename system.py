@@ -174,7 +174,7 @@ class Executor(object):
 def parse_arguments():
     ################################################################################
     # parse arguments
-    parser = argparse.ArgumentParser(description='Symbolically analize a program')
+    parser = argparse.ArgumentParser(description='Symbolically analyze a program')
     parser.add_argument('--workspace', type=str, nargs=1, default='pse_',
                        help='A folder name fpor temporaries and results. (default pse_?????)')
     parser.add_argument('--log', type=str, nargs=1, default=['/dev/stdout'],
@@ -191,7 +191,7 @@ def parse_arguments():
     parser.add_argument('--env', type=str,  action='append', default =[],
                        help='A environment variable to pass to the program (ex. VAR=VALUE)')
     parser.add_argument('program', type=str, metavar='PROGRAM',
-                       help='Program to analize' )
+                       help='Program to analyze' )
     parser.add_argument('argv', type=str, nargs='...', metavar='...',
                        help='Program arguments. Need a -- separator. Ex: -- -y 2453' )
     raw_args = sys.argv[1:]
@@ -244,7 +244,7 @@ if __name__ == '__main__':
     print "Starting..."
     try:
         while len(executor.states) != 0:
-            #select a suitable state to analize
+            #select a suitable state to analyze
             if current_state is None:
                 current_state = executor.getState()
 
