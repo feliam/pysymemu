@@ -486,7 +486,7 @@ class Solver(object):
             This is implemented using an external native solver via a subprocess.
             Everytime a new symbol or assertion is added a smtlibv2 command is 
             sent to the solver.
-            The actual state is also mantained in memory to be able to save and
+            The actual state is also maintained in memory to be able to save and
             restore the state. 
             The analisys may be saved to disk and continued after a while or 
             forked in memory or even sent over the network.
@@ -606,7 +606,7 @@ class Solver(object):
     def max(self, X, M=10000):
         ''' Iterativelly finds the maximum value for a symbol.
             @param X: a symbol or expression
-            @param M: maximun number of iterations allowed
+            @param M: maximum number of iterations allowed
         '''
         assert self.check() == 'sat'
         assert type(X) is BitVec
@@ -637,7 +637,7 @@ class Solver(object):
     def min(self, X, M=10000):
         ''' Iterativelly finds the minimum value for a symbol.
             @param X: a symbol or expression
-            @param M: maximun number of iterations allowed
+            @param M: maximum number of iterations allowed
         '''
         assert self.check() == 'sat'
         assert type(X) is BitVec

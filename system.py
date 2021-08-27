@@ -283,7 +283,7 @@ if __name__ == '__main__':
             except SymbolicPCException, e:
                 #if PC gets "tainted" with symbols do stuff
                 assert issymbolic(current_state.cpu.PC)
-                #get all possible PC destinations (raise if more tahn 100 options)
+                #get all possible PC destinations (raise if more than 100 options)
                 vals = list(current_state.solver.getallvalues(current_state.cpu.PC, maxcnt = 100))
                 print "Symbolic PC found, possible detinations are: ", ["%x"%x for x in vals]
 
@@ -307,7 +307,7 @@ if __name__ == '__main__':
                 current_state.solver.add(current_pc == new_pc)
                 current_state.cpu.PC = new_pc
 
-                #Try to do some symplifications to shrink symbolic footprint
+                #Try to do some simplifications to shrink symbolic footprint
                 try :
                     bvals = []
                     current_state.solver.push()

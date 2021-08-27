@@ -93,9 +93,9 @@ The commandline gives you a somehow confusing help. :)
    -h, --help           show this help message and exit
    --worspace WORSPACE  A folder name fpor temporaries and results. (default pse_?????)
    --sym SYM            Consider a filename as symbolic
-   --stdin STDIN        A filename to pass as standar stdin (default: stdin)
-   --stdout STDOUT      A filename to pass as standar stdout (default: stdout)
-   --stderr STDERR      A filename to pass as standar stderr (default: stderr)
+   --stdin STDIN        A filename to pass as standard stdin (default: stdin)
+   --stdout STDOUT      A filename to pass as standard stdout (default: stdout)
+   --stderr STDERR      A filename to pass as standard stderr (default: stderr)
    --env ENV            A environment variable to pass to the program (ex. VAR=VALUE)
 ```
 
@@ -152,7 +152,7 @@ symbolic (its '+' will be free 8bit variables) with --sym 'stdin', like this:
 
 ``` $ python system.py --sym stdin examples/toy002-libc```
 
-The quick and dirty command line tool will generate somthing like this..
+The quick and dirty command line tool will generate something like this..
 ```
  $ python system.py  --sym stdin examples/toy002-libc
  [+] Running examples/toy002-libc
