@@ -787,7 +787,7 @@ class Memory(object):
         """
         start = self._floor(start)
         size = self._ceil(size-1)
-        #select all mappings that have at least 1 byte unmaped
+        #select all mappings that have at least 1 byte unmapped
         affected = set()
         p = self._page(start)
         while p < self._page(self._ceil(start+size)):
@@ -849,7 +849,7 @@ class Memory(object):
             #remove m from the maps set
             self.maps.remove(m)
 
-            #unmap the range from m posibly generating 0, 1 or 2 new maps
+            #unmap the range from m possibly generating 0, 1 or 2 new maps
             new_maps += m.mprotect(start, size, perms)
 
         #reattach the newly generated maps (it may be none)
@@ -1041,7 +1041,7 @@ class SMemory(Memory):
         @param addr: the address to put a concrete or symbolic content
         @param data: the content to put in C{addr}
         
-        @todo: if addr is Readable/Executable? Double checked when accesing parent class!
+        @todo: if addr is Readable/Executable? Double checked when accessing parent class!
         @todo: Instead of concretizing all possible values in range raise exception
                and make executor for arr on each mapped page
 
@@ -1080,7 +1080,7 @@ class SMemory(Memory):
         @param addr: the address to obtain its content
         @return: a character or a symbol stored in C{addr}
         
-        @todo:  if addr is Readable/Executable? Double checked when accesing parebnt class!!!
+        @todo:  if addr is Readable/Executable? Double checked when accessing parebnt class!!!
         """
         if issymbolic(addr):
             logger.debug("Read from symbolic address %s", str(addr).replace("\n",""))

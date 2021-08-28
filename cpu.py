@@ -5421,7 +5421,7 @@ def putcache(cache_name):
                     else:
                         p+=1
                 return value
-            #invalidate any overlaping cached value #todo extract remaining valid bits
+            #invalidate any overlapping cached value #todo extract remaining valid bits
             p = where
             while p <= where+size/8:
                 if p in used:
@@ -5461,7 +5461,7 @@ def getcache(cache_name):
                         return EXTRACT(cached_expr,offset,size) #(cached_expr>>offset)&((1<<size)-1)
             value = get(obj, where, size,**kw_args)
             if isconcrete(where):
-                #invalidate any overlaping cached value #todo extract remaining valid bits
+                #invalidate any overlapping cached value #todo extract remaining valid bits
                 p = where
                 while p <= where+size/8:
                     if p in used:

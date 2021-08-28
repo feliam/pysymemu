@@ -921,7 +921,7 @@ class Linux(object):
         @param cpu: current CPU.
         @param start: the starting address to change the permissions.
         @param size: the size of the portion of memory to change the permissions.
-        @param prot: the new acces premission for the memory.
+        @param prot: the new acces permission for the memory.
         @return: C{0} on success.
         '''
         perms = ['   ', 'r  ',' w ','rw ','  x','r x', ' wx','rwx'][prot&7]
@@ -1244,7 +1244,7 @@ class Linux(object):
 
     def execute(self):
         """
-        Execute one cpu instruction in the current thread (only one suported).
+        Execute one cpu instruction in the current thread (only one supported).
         Intruction may result in a syscall.
 
         @rtype: bool
