@@ -173,7 +173,7 @@ class MMap(object):
         if addr < self.start or addr >= self.end:
             raise MemoryException("Page Fault writing", addr) 
         if not self.isWriteable():
-            raise MemoryException("No access writting", addr) 
+            raise MemoryException("No access writing", addr) 
 
         self._putchar(addr, data)
 
@@ -1053,7 +1053,7 @@ class SMemory(Memory):
             #Mark and intialize symbolic range
             for i in xrange(addr_min, addr_max+1):
                 if not self.isWriteable(i):
-                    raise MemoryException("No Access Writting", i)
+                    raise MemoryException("No Access Writing", i)
             for i in xrange(addr_min, addr_max+1):
                 if not i in self.addr2symbol:
                     self.symbol[i] = self.getchar(i)
@@ -1063,7 +1063,7 @@ class SMemory(Memory):
         else:
             #concrete addr case
             if not self.isWriteable(addr):
-                raise MemoryException("No Access Writting", addr)
+                raise MemoryException("No Access Writing", addr)
             if issymbolic(data):
                 self.symbol[addr] = chr(data)
                 self.addr2symbol.add(addr)
@@ -1125,5 +1125,3 @@ class SMemory(Memory):
         self.addr2symbol = state['issymbol']
         self.symbol = state['symbol']
         self.solver = state['solver']
-
-
